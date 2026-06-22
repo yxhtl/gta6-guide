@@ -6,6 +6,7 @@ Usage: python scripts/build.py
 """
 
 import csv
+import hashlib
 import os
 import shutil
 from pathlib import Path
@@ -51,12 +52,49 @@ def make_slug(name):
         slug = slug.replace(ch, "")
     return slug
 
+def hash_seed(name):
+    """Get a deterministic variant number (0-2) from a name string.
+    Same name always gets same variant — pages don't change on rebuild."""
+    h = hashlib.md5(name.encode()).hexdigest()
+    return int(h[:8], 16) % 3
+
+# Mission body variants — changes paragraph structure for HCU diversity
+MISSION_VARIANT = {
+    0: {"obj_heading": "Mission Objectives", "tips_heading": "Tips"},
+    1: {"obj_heading": "Walkthrough Steps", "tips_heading": "Pro Tips"},
+    2: {"obj_heading": "What You Need to Do", "tips_heading": "Strategy Guide"},
+}
+
+# Mission meta description variants
+MISSION_DESC = [
+    lambda r: f"Complete walkthrough for {r['mission_name']} in GTA6. Chapter: {r.get('chapter','?')}. {r.get('tips','')[:120]}",
+    lambda r: f"GTA6 mission guide: {r['mission_name']} — full step-by-step walkthrough. Difficulty: {r.get('difficulty','Normal')} | Reward: {r.get('reward','TBD')}. All objectives covered.",
+    lambda r: f"How to beat {r['mission_name']} in GTA6. {r.get('difficulty','Normal')} difficulty mission in {r.get('chapter','?')}. Complete objectives and strategy guide.",
+]
+
+# Item body variants — changes section order and heading phrasing
+ITEM_VARIANT = {
+    0: {"acq_heading": "How to Get It", "desc_pos": "after-stats"},
+    1: {"acq_heading": "Where to Find It", "desc_pos": "before-stats"},
+    2: {"acq_heading": "Acquisition Method", "desc_pos": "after-stats"},
+}
+
+# Item meta description variants
+ITEM_DESC = [
+    lambda r, cat: f"Stats, location, and how to get {r.get('name','')} in GTA6. {r.get('description','')[:120]}",
+    lambda r, cat: f"GTA6 {cat} guide: {r.get('name','')} — complete stats, spawn location, and tips. {r.get('description','')[:100]}",
+    lambda r, cat: f"Where to find the {r.get('name','')} in GTA6. Full {cat.lower()} stats, acquisition method, and pro strategies.",
+]
+
 # ---- Page generators ----
 
 def gen_mission(row, i, prev_filename, next_filename):
-    """Generate a single mission page."""
+    """Generate a single mission page with randomized paragraph structure."""
     tpl = read_template("mission.html")
     slug = make_slug(row.get("mission_name", f"mission-{i+1}"))
+    seed = hash_seed(row.get("mission_name", ""))
+    v = MISSION_VARIANT[seed]
+
     steps_html = ""
     for s in row.get("steps", "").split("|"):
         s = s.strip()
@@ -66,12 +104,26 @@ def gen_mission(row, i, prev_filename, next_filename):
     tips = row.get("tips", "").strip()
     tips_html = ""
     if tips:
-        tips_html = '<div class="tip">' + tips + "</div>"
+        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{tips}</div>"
 
     trivia = row.get("trivia", "").strip()
     trivia_html = ""
     if trivia:
-        trivia_html = f"<h2>Trivia</h2><p>{trivia}</p>"
+        trivia_html = f"<h2>Trivia</h2>\n<p>{trivia}</p>"
+
+    # Assemble body with different section order per variant
+    steps_block = f"<h2>{v['obj_heading']}</h2>\n<ol class=\"step-list\">\n{steps_html}</ol>"
+    if seed == 0:
+        # Standard: objectives → tips → trivia
+        mission_body = f"{steps_block}\n{tips_html}\n{trivia_html}"
+    elif seed == 1:
+        # Trivia-after-objectives: objectives → trivia → tips (tips last as "Pro Tips" punch)
+        mission_body = f"{steps_block}\n{trivia_html}\n{tips_html}"
+    else:
+        # Story-first: summary paragraph → objectives → combined tips+trivia
+        summary = f"<p>This mission takes place in <strong>{row.get('chapter','?')}</strong> and is rated <strong>{row.get('difficulty','Normal')}</strong>. Completing it rewards you with <strong>{row.get('reward','TBD')}</strong>.</p>"
+        combined = tips_html + "\n" + trivia_html if tips_html or trivia_html else ""
+        mission_body = f"{summary}\n{steps_block}\n{combined}"
 
     prev_html = ""
     if prev_filename:
@@ -82,16 +134,17 @@ def gen_mission(row, i, prev_filename, next_filename):
 
     vars_dict = {
         "TITLE": row["mission_name"],
-        "DESCRIPTION": f"Complete walkthrough for {row['mission_name']} in GTA6. Chapter: {row.get('chapter','?')}. {row.get('tips','')[:120]}",
+        "DESCRIPTION": MISSION_DESC[seed](row),
         "CSS_PATH": "../",
         "HOME_PATH": "../",
         "MISSION_NAME": row["mission_name"],
         "CHAPTER": row.get("chapter", "TBD"),
         "DIFFICULTY": row.get("difficulty", "Normal"),
         "REWARD": row.get("reward", "TBD"),
-        "STEPS": steps_html,
-        "TIPS_SECTION": tips_html,
-        "TRIVIA_SECTION": trivia_html,
+        "MISSION_BODY": mission_body,
+        "MISSIONS_ACTIVE": ' class="active"',
+        "PARENT_SLUG": "story-missions",
+        "PARENT_LABEL": "Missions",
         "PREV_LINK": prev_html,
         "NEXT_LINK": next_html,
     }
@@ -104,10 +157,12 @@ def gen_mission(row, i, prev_filename, next_filename):
     }
 
 def gen_item(row, category):
-    """Generate a single weapon or vehicle page."""
+    """Generate a single weapon or vehicle page with randomized paragraph structure."""
     tpl = read_template("item.html")
     name = row.get("name", "Unknown Item")
     slug = make_slug(name)
+    seed = hash_seed(name)
+    v = ITEM_VARIANT[seed]
     cat_lower = category.lower()
 
     # Build stats grid
@@ -118,27 +173,42 @@ def gen_item(row, category):
         if val and val.strip():
             stats_html += f'<div class="stat-item"><div class="stat-label">{key.replace("_"," ").title()}</div><div class="stat-value">{val}</div></div>\n'
 
+    desc_text = row.get("description", f"Stats and details for {name} in GTA6.")
+    desc_html = f"<p>{desc_text}</p>"
+
     tips = row.get("tips", "").strip()
     tips_html = ""
     if tips:
-        tips_html = f'<h2>Tips</h2><div class="tip">{tips}</div>'
+        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{tips}</div>"
+
+    acq_text = row.get("acquisition", "TBD — game not yet released.")
+    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{acq_text}</p>"
+
+    # Assemble body with different section order per variant
+    stats_block = f"<div class=\"stats-grid\">\n{stats_html}</div>"
+    if seed == 0:
+        # Standard: stats → description → acquisition → tips
+        item_body = f"{stats_block}\n{desc_html}\n{acq_block}\n{tips_html}"
+    elif seed == 1:
+        # Description-first: description → stats → acquisition → tips
+        item_body = f"{desc_html}\n{stats_block}\n{acq_block}\n{tips_html}"
+    else:
+        # Acquisition-first: acquisition → stats → description → tips
+        item_body = f"{acq_block}\n{stats_block}\n{desc_html}\n{tips_html}"
 
     weapons_active = ' class="active"' if category == "Weapons" else ""
     vehicles_active = ' class="active"' if category == "Vehicles" else ""
 
     vars_dict = {
         "TITLE": f"{name} - GTA6 {category}",
-        "DESCRIPTION": f"Stats, location, and how to get {name} in GTA6. {row.get('description','')[:120]}",
+        "DESCRIPTION": ITEM_DESC[seed](row, category),
         "CSS_PATH": "../",
         "HOME_PATH": "../",
         "ITEM_NAME": name,
         "CATEGORY": category,
         "CATEGORY_LOWER": cat_lower,
         "TYPE_TAG": row.get("type_tag", category),
-        "STATS": stats_html,
-        "DESCRIPTION_TEXT": f"<p>{row.get('description','Stats and details for ' + name + ' in GTA6.')}</p>",
-        "ACQUISITION": row.get("acquisition", "TBD — game not yet released."),
-        "TIPS_SECTION": tips_html,
+        "ITEM_BODY": item_body,
         "WEAPONS_ACTIVE": weapons_active,
         "VEHICLES_ACTIVE": vehicles_active,
     }
@@ -146,6 +216,122 @@ def gen_item(row, category):
     filename = f"{slug}.html"
     write_page(f"{out_dir}/{filename}", replace_all(tpl, vars_dict))
     return {"name": name, "type_tag": row.get("type_tag", ""), "filename": filename}
+
+def gen_collectible(row):
+    """Generate a single collectible page using item template but with collectible-specific layout."""
+    tpl = read_template("item.html")
+    name = row.get("name", "Unknown Collectible")
+    slug = make_slug(name)
+    seed = hash_seed(name)
+    v = ITEM_VARIANT[seed]
+
+    area = row.get("area", "TBD")
+    type_tag = row.get("type_tag", "Collectible")
+    reward = row.get("reward", "TBD")
+    desc_text = row.get("description", f"Where to find {name} in GTA6.")
+    acq_text = row.get("acquisition", "TBD — game not yet released.")
+    tips = row.get("tips", "").strip()
+
+    # Stats grid tailored for collectibles
+    stats_html = f'<div class="stat-item"><div class="stat-label">Area</div><div class="stat-value">{area}</div></div>\n'
+    stats_html += f'<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">{type_tag}</div></div>\n'
+    stats_html += f'<div class="stat-item"><div class="stat-label">Reward</div><div class="stat-value">{reward}</div></div>\n'
+
+    desc_html = f"<p>{desc_text}</p>"
+    tips_html = ""
+    if tips:
+        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{tips}</div>"
+
+    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{acq_text}</p>"
+    stats_block = f"<div class=\"stats-grid\">\n{stats_html}</div>"
+
+    if seed == 0:
+        item_body = f"{stats_block}\n{desc_html}\n{acq_block}\n{tips_html}"
+    elif seed == 1:
+        item_body = f"{desc_html}\n{stats_block}\n{acq_block}\n{tips_html}"
+    else:
+        item_body = f"{acq_block}\n{stats_block}\n{desc_html}\n{tips_html}"
+
+    vars_dict = {
+        "TITLE": f"{name} Location - GTA6 Collectibles",
+        "DESCRIPTION": ITEM_DESC[seed]({"name": name, "description": desc_text}, "Collectibles"),
+        "CSS_PATH": "../",
+        "HOME_PATH": "../",
+        "ITEM_NAME": name,
+        "CATEGORY": "Collectibles",
+        "CATEGORY_LOWER": "collectibles",
+        "TYPE_TAG": type_tag,
+        "ITEM_BODY": item_body,
+        "WEAPONS_ACTIVE": "",
+        "VEHICLES_ACTIVE": "",
+    }
+    filename = f"{slug}.html"
+    write_page(f"collectibles/{filename}", replace_all(tpl, vars_dict))
+    return {"name": name, "type_tag": type_tag, "filename": filename}
+
+def gen_side_mission(row, i, prev_filename, next_filename):
+    """Generate a single side mission page — reuses mission template with randomized structure."""
+    tpl = read_template("mission.html")
+    slug = make_slug(row.get("mission_name", f"side-{i+1}"))
+    seed = hash_seed(row.get("mission_name", ""))
+    v = MISSION_VARIANT[seed]
+
+    steps_html = ""
+    for s in row.get("steps", "").split("|"):
+        s = s.strip()
+        if s:
+            steps_html += f"<li>{s}</li>\n"
+
+    tips = row.get("tips", "").strip()
+    tips_html = ""
+    if tips:
+        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{tips}</div>"
+
+    trivia = row.get("trivia", "").strip()
+    trivia_html = ""
+    if trivia:
+        trivia_html = f"<h2>Trivia</h2>\n<p>{trivia}</p>"
+
+    steps_block = f"<h2>{v['obj_heading']}</h2>\n<ol class=\"step-list\">\n{steps_html}</ol>"
+    if seed == 0:
+        mission_body = f"{steps_block}\n{tips_html}\n{trivia_html}"
+    elif seed == 1:
+        mission_body = f"{steps_block}\n{trivia_html}\n{tips_html}"
+    else:
+        summary = f"<p>This side mission is available from <strong>{row.get('chapter','?')}</strong> and is rated <strong>{row.get('difficulty','Normal')}</strong>. Completing it rewards you with <strong>{row.get('reward','TBD')}</strong>.</p>"
+        combined = tips_html + "\n" + trivia_html if tips_html or trivia_html else ""
+        mission_body = f"{summary}\n{steps_block}\n{combined}"
+
+    prev_html = ""
+    if prev_filename:
+        prev_html = f'<a href="{prev_filename}">← Previous Mission</a>'
+    next_html = ""
+    if next_filename:
+        next_html = f'<a href="{next_filename}">Next Mission →</a>'
+
+    vars_dict = {
+        "TITLE": row["mission_name"],
+        "DESCRIPTION": MISSION_DESC[seed](row),
+        "CSS_PATH": "../",
+        "HOME_PATH": "../",
+        "MISSION_NAME": row["mission_name"],
+        "CHAPTER": row.get("chapter", "TBD"),
+        "DIFFICULTY": row.get("difficulty", "Normal"),
+        "REWARD": row.get("reward", "TBD"),
+        "MISSION_BODY": mission_body,
+        "MISSIONS_ACTIVE": "",
+        "PARENT_SLUG": "side-missions",
+        "PARENT_LABEL": "Side Missions",
+        "PREV_LINK": prev_html,
+        "NEXT_LINK": next_html,
+    }
+    filename = f"side-{str(i+1).zfill(2)}-{slug}.html"
+    write_page(f"side-missions/{filename}", replace_all(tpl, vars_dict))
+    return {
+        "name": row["mission_name"],
+        "chapter": row.get("chapter", "TBD"),
+        "filename": filename,
+    }
 
 def gen_index(category_name, items, css_path="", home_path=""):
     """Generate a category index page."""
@@ -218,7 +404,7 @@ def gen_robots():
     content = "User-agent: *\nAllow: /\nSitemap: https://gta6-guide.com/sitemap.xml\n"
     write_page("robots.txt", content)
 
-def gen_homepage(mission_count, weapon_count, vehicle_count):
+def gen_homepage(mission_count, weapon_count, vehicle_count, collectible_count, sidem_count):
     """Generate the homepage."""
     tpl = read_template("generic.html")
     vars_dict = {
@@ -259,11 +445,11 @@ def gen_homepage(mission_count, weapon_count, vehicle_count):
     <p>How to make money fast in GTA6</p>
   </a>
   <a href="collectibles/index.html" class="category-card">
-    <h3>📍 Collectibles</h3>
+    <h3>📍 Collectibles ({collectible_count})</h3>
     <p>Every hidden item location</p>
   </a>
   <a href="side-missions/index.html" class="category-card">
-    <h3>📌 Side Missions</h3>
+    <h3>📌 Side Missions ({sidem_count})</h3>
     <p>All side missions and strangers</p>
   </a>
   <a href="online/index.html" class="category-card">
@@ -322,7 +508,33 @@ def main():
     if vehicle_items:
         gen_index("Vehicles", vehicle_items, css_path="../", home_path="../")
 
-    # 4. Generate cheats page (GTA5 reference + expected GTA6 categories)
+    # 4. Generate collectible pages
+    collectibles = read_csv("collectibles.csv")
+    collectible_items = []
+    for row in collectibles:
+        item = gen_collectible(row)
+        collectible_items.append(item)
+
+    if collectible_items:
+        gen_index("Collectibles", collectible_items, css_path="../", home_path="../")
+
+    # 5. Generate side mission pages
+    side_missions_raw = read_csv("side-missions.csv")
+    side_filenames = []
+    for i, row in enumerate(side_missions_raw):
+        slug = make_slug(row["mission_name"])
+        side_filenames.append(f"side-{str(i+1).zfill(2)}-{slug}.html")
+    side_items = []
+    for i, row in enumerate(side_missions_raw):
+        prev_fn = side_filenames[i-1] if i > 0 else ""
+        next_fn = side_filenames[i+1] if i < len(side_missions_raw) - 1 else ""
+        item = gen_side_mission(row, i, prev_fn, next_fn)
+        side_items.append(item)
+
+    if side_items:
+        gen_index("Side Missions", side_items, css_path="../", home_path="../")
+
+    # 6. Generate cheats page (GTA5 reference + expected GTA6 categories)
     gen_generic("cheats.html",
         title="GTA6 Cheats & Cheat Codes — Full List",
         h1="GTA6 Cheats & Cheat Codes",
@@ -385,7 +597,7 @@ def main():
 <p>We monitor cheat discovery threads on Reddit, GTAForums, and Twitter/X in real time during launch week. <strong>This page will be updated within hours of the first confirmed GTA6 cheat codes.</strong></p>""",
         active_nav="cheats")
 
-    # 5. Generate money guide (expanded strategies)
+    # 7. Generate money guide (expanded strategies)
     gen_generic("money-guide.html",
         title="GTA6 Money Guide — How to Make Money Fast (Best Methods)",
         h1="GTA6 Money Guide — How to Make Money Fast",
@@ -451,24 +663,79 @@ def main():
 </ol>""",
         active_nav="money")
 
-    # 6. Generate placeholder index pages for empty categories
-    for cat_name, cat_dir in [("Collectibles", "collectibles"), ("Side Missions", "side-missions"), ("Online", "online")]:
-        tpl = read_template("index-template.html")
-        vars_dict = {
-            "TITLE": f"GTA6 {cat_name}",
-            "DESCRIPTION": f"Complete guide to {cat_name.lower()} in GTA6.",
-            "CSS_PATH": "../",
-            "HOME_PATH": "../",
-            "CATEGORY_NAME": cat_name,
-            "CATEGORY_DESC": f"Content coming after GTA6 release.",
-            "ITEM_LIST": '<li style="color:var(--text-dim);padding:16px;">Content will be added after game release. Stay tuned!</li>',
-            "MISSIONS_ACTIVE": "",
-            "WEAPONS_ACTIVE": "",
-            "VEHICLES_ACTIVE": "",
-        }
-        write_page(f"{cat_dir}/index.html", replace_all(tpl, vars_dict))
+    # 8. Generate online guide page
+    gen_generic("online/index.html",
+        title="GTA6 Online Guide — Tips, Heists & Money Making",
+        h1="GTA6 Online Guide",
+        meta="Complete guide to GTA6 Online: heists, businesses, money making, crews, and PvP tips. Get ahead of other players from day one.",
+        content="""<div class="disclaimer">
+  GTA6 Online details are based on GTA5 Online patterns and Rockstar's public statements. We will update with exact GTA6 Online data on launch day.
+</div>
 
-    # 7. Generate privacy page
+<h2>What We Know About GTA6 Online</h2>
+<p>GTA Online (GTA5) has been Rockstar's biggest cash cow — generating <strong>$500M+ per year</strong> since 2013. GTA6 Online will be a separate, evolving multiplayer world built from lessons learned over a decade of GTA Online updates.</p>
+<p>Rockstar has confirmed that GTA6 Online will launch alongside the single-player game, not months later. Expect it to be available <strong>on day one</strong>.</p>
+
+<h2>Getting Started: First Things to Do</h2>
+<ol class="step-list">
+  <li><strong>Complete the tutorial</strong> — GTA Online always starts with a guided intro that gives you your first car, weapon, and property. Don't skip it — the free items are worth $100K+.</li>
+  <li><strong>Save your first $200K</strong> — don't waste money on clothes or car mods. Your first goal is a high-end apartment or business property.</li>
+  <li><strong>Join a crew</strong> — having 3 other players to run heists with is the single biggest money multiplier. Solo players earn 3-5x less.</li>
+  <li><strong>Buy the Buzzard (or GTA6 equivalent)</strong> — a weaponized helicopter is the best early investment. It spawns instantly and makes every mission faster.</li>
+  <li><strong>Do daily objectives</strong> — Rockstar gives $25K-$50K per day for completing 3 simple tasks. Free money, takes 15 minutes.</li>
+</ol>
+
+<h2>Best Money-Making Methods in GTA Online</h2>
+
+<table>
+  <thead>
+    <tr><th>Method</th><th>Solo?</th><th>Est. $/Hour</th><th>Difficulty</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Cayo Perico Heist</td><td>Yes</td><td>$1.5M-$2M</td><td>Medium</td></tr>
+    <tr><td>Diamond Casino Heist</td><td>No</td><td>$1M-$2.5M</td><td>Hard</td></tr>
+    <tr><td>Nightclub Warehouse</td><td>Yes</td><td>$40K-$80K</td><td>Easy</td></tr>
+    <tr><td>Bunker Sales</td><td>Yes</td><td>$135K-$210K</td><td>Medium</td></tr>
+    <tr><td>Vehicle Cargo (I/E)</td><td>Yes</td><td>$240K-$320K</td><td>Medium</td></tr>
+    <tr><td>Agency Contracts</td><td>Yes</td><td>$60K-$150K</td><td>Easy</td></tr>
+    <tr><td>MC Businesses</td><td>No</td><td>$60K-$100K</td><td>Medium</td></tr>
+  </tbody>
+</table>
+
+<div class="tip">In GTA5 Online, the Cayo Perico heist is the best solo money maker. GTA6 will almost certainly have a similar repeatable solo heist — it was one of the most popular updates in GTA Online history.</div>
+
+<div class="card"><h3>Businesses: Passive Income is King</h3>
+<p>GTA Online's economy revolves around owning businesses that generate product over time. You buy supplies, wait for product to build up (even while offline in some cases), then sell for profit.</p>
+<p><strong>Priority order for buying businesses:</strong> Bunker (best solo profit) → Nightclub (passive warehouse) → Agency (easy contracts) → MC businesses (coke/meth/cash) → Vehicle warehouse.</p>
+<p><strong>Key tip:</strong> Always sell in <strong>invite-only lobbies</strong>. Public lobbies have griefers who destroy your cargo for fun. You lose everything if your sale vehicle is destroyed. Invite-only = zero risk.</p></div>
+
+<div class="card"><h3>Heists: The Big Payouts</h3>
+<p>Heists are the core of GTA Online's endgame. They require 2-4 players and pay $500K-$2M+ per completion. The best heists are:</p>
+<p><strong>Cayo Perico</strong> — soloable, 1-hour setup + 15-minute finale, $1.5M average take. <strong>Diamond Casino</strong> — 2-4 players, harder but $2.5M max take. <strong>Doomsday Heist</strong> — 2-4 players, 3 acts, hardest PvE content but unlocks trade prices on powerful vehicles.</p>
+<p><strong>Crew strategy:</strong> Find 3 reliable players. Use voice chat. Split finale cuts 40/20/20/20 (host takes 40% since they paid setup costs). A coordinated crew running Cayo + Casino back-to-back can make <strong>$3M+ per night</strong>.</p></div>
+
+<div class="card"><h3>PvP & Freemode Survival</h3>
+<p>GTA Online's freemode is a warzone. Other players will kill you on sight. Here's how to survive:</p>
+<p><strong>Passive mode</strong> — makes you immune to PvP damage. Use it when doing business sales or just exploring. Toggle it from the interaction menu.</p>
+<p><strong>Ghost Organization</strong> — hides you and your crew from the radar for 3 minutes. Essential for avoiding griefers during sales.</p>
+<p><strong>Best PvP vehicles:</strong> Oppressor MK2 (flying bike with homing missiles — the griefers' favorite), Nightshark (insanely tanky SUV, survives 27 homing missiles), Toreador (submarine car with boost + unlimited missiles).</p>
+<p><strong>Counter-griefing:</strong> If someone is spawn-killing you, go passive, call your most armored vehicle, drive away, then come back with an Oppressor or jet. Or just switch sessions — it's not worth the frustration.</p></div>
+
+<div class="warning">Never buy Shark Cards at full price. Wait for 50% off sales, which happen every 2-3 months. Better yet, don't buy them at all — grinding Cayo Perico solo makes more money per hour than a $20 Shark Card is worth.</div>
+
+<h2>GTA6 Online: What to Expect</h2>
+<p>GTA6 Online will likely be a <strong>clean slate</strong> — everyone starts fresh with a new character. This is the best time to play: no griefers with 10-year-old accounts and every weaponized vehicle. <strong>The first 3 months of GTA6 Online will be the most fun the GTA community has had in years.</strong></p>
+
+<p>Rockstar has hinted at:</p>
+<ul>
+  <li><strong>Evolving map</strong> — the GTA6 world will change over time with new buildings, events, and storylines (similar to Fortnite's seasonal map changes)</li>
+  <li><strong>Cross-play</strong> — likely between PlayStation and Xbox at minimum, possibly PC too</li>
+  <li><strong>Roleplay features</strong> — Rockstar bought the biggest GTA RP server team (Cfx.re, creators of FiveM) in 2023. Expect built-in RP mechanics</li>
+  <li><strong>Dedicated servers</strong> — no more peer-to-peer connections that plagued GTA5 Online with lag and modders</li>
+</ul>""",
+        active_nav="")
+
+    # 9. Generate privacy page
     gen_generic("privacy.html",
         title="Privacy Policy - GTA6 Guide",
         h1="Privacy Policy",
@@ -478,10 +745,10 @@ def main():
 <p>This site is a fan project and is not affiliated with Rockstar Games or Take-Two Interactive.</p>""",
         active_nav="")
 
-    # 8. Generate homepage
-    gen_homepage(len(mission_items), len(weapon_items), len(vehicle_items))
+    # 10. Generate homepage
+    gen_homepage(len(mission_items), len(weapon_items), len(vehicle_items), len(collectible_items), len(side_items))
 
-    # 9. Generate sitemap & robots
+    # 11. Generate sitemap & robots
     pages = ["", "privacy.html", "cheats.html", "money-guide.html",
              "story-missions/", "weapons/", "vehicles/",
              "collectibles/", "side-missions/", "online/"]
@@ -491,12 +758,17 @@ def main():
         pages.append(f"weapons/{w['filename']}")
     for v in vehicle_items:
         pages.append(f"vehicles/{v['filename']}")
+    for c in collectible_items:
+        pages.append(f"collectibles/{c['filename']}")
+    for s in side_items:
+        pages.append(f"side-missions/{s['filename']}")
 
     gen_sitemap(pages)
     gen_robots()
 
     print(f"\nDone! Generated {len(pages)} URLs.")
     print(f"   Missions: {len(mission_items)} | Weapons: {len(weapon_items)} | Vehicles: {len(vehicle_items)}")
+    print(f"   Collectibles: {len(collectible_items)} | Side Missions: {len(side_items)} | Online: 1")
 
 if __name__ == "__main__":
     main()

@@ -21,7 +21,7 @@
   <div class="inner">
     <a href="{{HOME_PATH}}index.html" class="logo">GTA6<span> Guide</span></a>
     <nav>
-      <a href="{{HOME_PATH}}story-missions/index.html" class="active">Missions</a>
+      <a href="{{HOME_PATH}}story-missions/index.html"{{MISSIONS_ACTIVE}}>Missions</a>
       <a href="{{HOME_PATH}}weapons/index.html">Weapons</a>
       <a href="{{HOME_PATH}}vehicles/index.html">Vehicles</a>
       <a href="{{HOME_PATH}}cheats.html">Cheats</a>
@@ -32,20 +32,13 @@
 <main>
 <div class="breadcrumb">
   <a href="{{HOME_PATH}}index.html">Home</a><span class="sep">›</span>
-  <a href="{{HOME_PATH}}story-missions/index.html">Missions</a><span class="sep">›</span>
+  <a href="{{HOME_PATH}}{{PARENT_SLUG}}/index.html">{{PARENT_LABEL}}</a><span class="sep">›</span>
   {{MISSION_NAME}}
 </div>
 <h1>{{MISSION_NAME}}</h1>
 <div class="article-meta">Chapter: {{CHAPTER}} · Difficulty: {{DIFFICULTY}} · Reward: {{REWARD}}</div>
 
-<h2>Mission Objectives</h2>
-<ol class="step-list">
-{{STEPS}}
-</ol>
-
-{{TIPS_SECTION}}
-
-{{TRIVIA_SECTION}}
+{{MISSION_BODY}}
 
 <div class="page-nav">
   {{PREV_LINK}}
