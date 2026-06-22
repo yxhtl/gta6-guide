@@ -337,9 +337,12 @@ def gen_index(category_name, items, css_path="", home_path=""):
     """Generate a category index page."""
     tpl = read_template("index-template.html")
     item_list = ""
-    for item in items:
-        extra = f" — {item.get('chapter', item.get('type_tag', ''))}" if item.get("chapter") or item.get("type_tag") else ""
-        item_list += f'<li><a href="{item["filename"]}"><span class="item-name">{item["name"]}</span><span class="item-meta">{extra}</span></a></li>\n'
+    if items:
+        for item in items:
+            extra = f" — {item.get('chapter', item.get('type_tag', ''))}" if item.get("chapter") or item.get("type_tag") else ""
+            item_list += f'<li><a href="{item["filename"]}"><span class="item-name">{item["name"]}</span><span class="item-meta">{extra}</span></a></li>\n'
+    else:
+        item_list = '<div class="disclaimer">GTA6 尚未发售，此分类的内容将在游戏发售后更新。请收藏本页，发售后第一时间回来查看。</div>'
 
     missions_active = ' class="active"' if "Mission" in category_name else ""
     weapons_active = ' class="active"' if "Weapon" in category_name else ""
@@ -408,7 +411,7 @@ def gen_robots():
     content = "User-agent: *\nAllow: /\nSitemap: https://gta6-guide.com/sitemap.xml\n"
     write_page("robots.txt", content)
 
-def gen_homepage(mission_count, weapon_count, vehicle_count, collectible_count, sidem_count):
+def gen_homepage():
     """Generate the homepage."""
     tpl = read_template("generic.html")
     vars_dict = {
@@ -429,36 +432,41 @@ def gen_homepage(mission_count, weapon_count, vehicle_count, collectible_count, 
 
 <div class="category-grid">
   <a href="story-missions/index.html" class="category-card">
-    <h3>📋 Story Missions ({mission_count})</h3>
+    <h3>📋 Story Missions</h3>
     <p>Complete walkthrough for every main story mission</p>
+    <span class="card-badge">Coming Soon</span>
   </a>
   <a href="weapons/index.html" class="category-card">
-    <h3>🔫 Weapons ({weapon_count})</h3>
+    <h3>🔫 Weapons</h3>
     <p>Stats, locations, and tips for every weapon</p>
+    <span class="card-badge">Coming Soon</span>
   </a>
   <a href="vehicles/index.html" class="category-card">
-    <h3>🚗 Vehicles ({vehicle_count})</h3>
+    <h3>🚗 Vehicles</h3>
     <p>Complete vehicle catalog with stats and spawns</p>
+    <span class="card-badge">Coming Soon</span>
   </a>
   <a href="cheats.html" class="category-card">
     <h3>🎮 Cheats</h3>
-    <p>All GTA6 cheat codes in one place</p>
+    <p>GTA5 作弊码参考 + GTA6 发售后更新</p>
   </a>
   <a href="money-guide.html" class="category-card">
     <h3>💰 Money Guide</h3>
-    <p>How to make money fast in GTA6</p>
+    <p>赚钱方法通用思路，发售后更新具体数据</p>
   </a>
   <a href="collectibles/index.html" class="category-card">
-    <h3>📍 Collectibles ({collectible_count})</h3>
+    <h3>📍 Collectibles</h3>
     <p>Every hidden item location</p>
+    <span class="card-badge">Coming Soon</span>
   </a>
   <a href="side-missions/index.html" class="category-card">
-    <h3>📌 Side Missions ({sidem_count})</h3>
+    <h3>📌 Side Missions</h3>
     <p>All side missions and strangers</p>
+    <span class="card-badge">Coming Soon</span>
   </a>
   <a href="online/index.html" class="category-card">
     <h3>🌐 GTA Online</h3>
-    <p>Tips and guides for GTA6 Online</p>
+    <p>GTA5 Online 参考 + GTA6 Online 前瞻</p>
   </a>
 </div>""",
         "CHEATS_ACTIVE": "",
@@ -473,6 +481,14 @@ def main():
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
     print("Building GTA6 Guide...\n")
+
+    # 0. Clean old generated html files
+    for d in ["story-missions", "weapons", "vehicles", "collectibles", "side-missions"]:
+        dir_path = ROOT / d
+        if dir_path.exists():
+            for f in dir_path.glob("*.html"):
+                f.unlink()
+                print(f"  [CLEAN] {d}/{f.name}")
 
     # 1. Generate mission pages
     missions = read_csv("missions.csv")
@@ -489,8 +505,7 @@ def main():
         item = gen_mission(row, i, prev_fn, next_fn)
         mission_items.append(item)
 
-    if mission_items:
-        gen_index("Story Missions", mission_items, css_path="../", home_path="../")
+    gen_index("Story Missions", mission_items, css_path="../", home_path="../")
 
     # 2. Generate weapon pages
     weapons = read_csv("weapons.csv")
@@ -499,8 +514,7 @@ def main():
         item = gen_item(row, "Weapons")
         weapon_items.append(item)
 
-    if weapon_items:
-        gen_index("Weapons", weapon_items, css_path="../", home_path="../")
+    gen_index("Weapons", weapon_items, css_path="../", home_path="../")
 
     # 3. Generate vehicle pages
     vehicles = read_csv("vehicles.csv")
@@ -509,8 +523,7 @@ def main():
         item = gen_item(row, "Vehicles")
         vehicle_items.append(item)
 
-    if vehicle_items:
-        gen_index("Vehicles", vehicle_items, css_path="../", home_path="../")
+    gen_index("Vehicles", vehicle_items, css_path="../", home_path="../")
 
     # 4. Generate collectible pages
     collectibles = read_csv("collectibles.csv")
@@ -519,8 +532,7 @@ def main():
         item = gen_collectible(row)
         collectible_items.append(item)
 
-    if collectible_items:
-        gen_index("Collectibles", collectible_items, css_path="../", home_path="../")
+    gen_index("Collectibles", collectible_items, css_path="../", home_path="../")
 
     # 5. Generate side mission pages
     side_missions_raw = read_csv("side-missions.csv")
@@ -535,8 +547,7 @@ def main():
         item = gen_side_mission(row, i, prev_fn, next_fn)
         side_items.append(item)
 
-    if side_items:
-        gen_index("Side Missions", side_items, css_path="../", home_path="../")
+    gen_index("Side Missions", side_items, css_path="../", home_path="../")
 
     # 6. Generate cheats page (GTA5 reference + expected GTA6 categories)
     gen_generic("cheats.html",
@@ -579,21 +590,9 @@ def main():
 
 <div class="tip">GTA5 cheats disable achievements/trophies when active. GTA6 will likely have the same restriction — save before using cheats.</div>
 
-<h2>Expected GTA6 Cheat Categories</h2>
-<p>Based on every GTA release since GTA3, these categories are almost guaranteed to return:</p>
-
-<div class="stats-grid">
-  <div class="stat-item"><div class="stat-label">🛡️ God Mode</div><div class="stat-value">Confirmed</div></div>
-  <div class="stat-item"><div class="stat-label">🔫 Weapons</div><div class="stat-value">Confirmed</div></div>
-  <div class="stat-item"><div class="stat-label">🚗 Vehicles</div><div class="stat-value">Confirmed</div></div>
-  <div class="stat-item"><div class="stat-label">⭐ Wanted</div><div class="stat-value">Confirmed</div></div>
-  <div class="stat-item"><div class="stat-label">🌤️ Weather</div><div class="stat-value">Likely</div></div>
-  <div class="stat-item"><div class="stat-label">💰 Money</div><div class="stat-value">Uncertain</div></div>
-  <div class="stat-item"><div class="stat-label">💪 Super Jump</div><div class="stat-value">Likely</div></div>
-  <div class="stat-item"><div class="stat-label">🏊 Fast Swim</div><div class="stat-value">Likely</div></div>
-  <div class="stat-item"><div class="stat-label">🎯 Slow Motion</div><div class="stat-value">Confirmed</div></div>
-  <div class="stat-item"><div class="stat-label">🎸 Spawn Bodyguard</div><div class="stat-value">Possible</div></div>
-</div>
+<h2>What to Expect for GTA6 Cheats</h2>
+<p>GTA6 尚未发售，无法确认任何作弊码。以下是基于 GTA 系列传统的推测——实际以发售后为准。</p>
+<p>此页面将在游戏发售后 24-48 小时内更新，届时会有社区挖掘出的所有 GTA6 作弊码。</p>
 
 <h2>Why Cheats Get Discovered Fast</h2>
 <p>Rockstar phone cheats follow a predictable pattern — the numbers spell words on a phone keypad. For example, GTA5'S invincibility number <code class="cheat-code">1-999-724-654-5537</code> spells <code class="cheat-code">1-999-PAIN-KILLER</code>. The community typically reverse-engineers all phone cheats within <strong>24-48 hours</strong> of release by brute-forcing common word combinations.</p>
@@ -607,64 +606,28 @@ def main():
         h1="GTA6 Money Guide — How to Make Money Fast",
         meta="Best ways to earn money fast in GTA6: heists, stock market manipulation, side businesses, vehicle exports, collectible hunting. Detailed strategies and payout estimates.",
         content="""<div class="disclaimer">
-  Money-making strategies are based on GTA series patterns. We will update with exact GTA6 numbers within the first week of launch. The methods below are almost certain to work — Rockstar has kept the same economic systems since GTA5.
+  GTA6 尚未发售，此页面的具体赚钱方法、金额数据将在游戏发售后第一周内更新。
 </div>
 
-<h2>Overview: How Money Works in GTA6</h2>
-<p>In every GTA game since Vice City, money buys you <strong>weapons, properties, vehicles, and business investments</strong>. GTA6 expands on GTA5's economy with more properties and a deeper stock market. You'll need money from the very first mission.</p>
-<p>Here are the proven money-making methods, ranked by <strong>payout per hour</strong>:</p>
+<h2>GTA 系列赚钱通用思路</h2>
+<p>以下为 GTA 系列历代的赚钱模式总结——GTA6 很可能延续这些系统，但具体数值和机制以发售后为准：</p>
 
-<table>
-  <thead>
-    <tr><th>Method</th><th>Risk</th><th>Est. Payout</th><th>Best For</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Story Heists</td><td>Low</td><td>$50K-$2M</td><td>Big one-time payouts</td></tr>
-    <tr><td>Stock Market</td><td>Medium</td><td>20%-200% ROI</td><td>Passive investing</td></tr>
-    <tr><td>Side Businesses</td><td>Low</td><td>$5K-$50K/day</td><td>Passive income</td></tr>
-    <tr><td>Vehicle Export</td><td>Medium</td><td>$20K-$100K/car</td><td>Active grinding</td></tr>
-    <tr><td>Collectibles</td><td>None</td><td>$500-$5K/item</td><td>Early game cash</td></tr>
-    <tr><td>Street Races</td><td>Low</td><td>$2K-$10K/race</td><td>Repeatable income</td></tr>
-  </tbody>
-</table>
+<div class="card"><h3>主线任务</h3>
+<p>完成主线剧情是任何 GTA 游戏最主要的资金来源。后期任务（尤其是抢劫类）通常给出最大的一次性报酬。</p></div>
 
-<div class="card"><h3>1. Story Heists — The Big Money</h3>
-<p>Story heists are the highest-paying activities in any GTA game. GTA5's biggest heist paid <strong>$200M+ total</strong>. GTA6 is expected to have 5-6 major heists.</p>
-<p><strong>Key strategy:</strong> Always pick the best crew members for each heist role. Cheap crew members mess up, costing you money. Spend more on the driver and hacker — they determine your cut. Wait until you have enough cash to invest in the best crew before attempting the biggest heists.</p>
-<p><em>Expected payout range: $50,000 (early heists) to $2,000,000+ (finale heists).</em></p></div>
+<div class="card"><h3>股市系统</h3>
+<p>GTA5 首次引入了受玩家行为影响的股票市场（LCN 和 BAWSAQ）。如果 GTA6 延续此系统，在特定任务前投资相关股票会是收益最高的赚钱方式。</p></div>
 
-<div class="card"><h3>2. Stock Market Manipulation — GTA5's Best-Kept Secret</h3>
-<p>GTA5 had two stock exchanges: LCN (Liberty City National) and BAWSAQ. LCN was affected by your in-game actions — blow up a company's competitor, their stock drops. This is <strong>the single most profitable mechanic</strong> in GTA5, and GTA6 is expected to expand it.</p>
-<p><strong>How it works:</strong> Before a mission that targets a specific company, invest all your money in their <strong>competitor</strong>. After the mission, the targeted company's stock falls and the competitor's rises. Sell for profit. Some GTA5 missions gave 80-200% returns if you invested correctly.</p>
-<p><strong>Pro tip:</strong> Save your game before investing. If the market doesn't move as expected, reload and try a different stock. Also, invest <em>before</em> assassination missions — those always move specific stocks.</p></div>
+<div class="card"><h3>支线任务与产业</h3>
+<p>出租车、赛车、义警等可重复支线任务提供稳定收入。GTA Online 中的产业系统（夜店、地堡等）可能在 GTA6 单机模式中也有对应。</p></div>
 
-<div class="card"><h3>3. Side Businesses & Properties — Passive Income</h3>
-<p>GTA Online introduced businesses like nightclubs, biker gangs, and bunkers that generate money over time. GTA6's single-player is expected to bring this system into the main story — you'll buy properties that generate income while you do other things.</p>
-<p><strong>Strategy:</strong> Buy properties as early as possible. The sooner you own income-generating assets, the more money they make over the course of the game. Prioritize <strong>high-ROI properties</strong> first — cheap businesses that pay for themselves quickly.</p></div>
+<div class="card"><h3>收集品</h3>
+<p>每代 GTA 都有隐藏包裹/收集品，找到一定数量后通常有现金奖励和特殊载具。</p></div>
 
-<div class="card"><h3>4. Vehicle Export & Chop Shop — Active Money</h3>
-<p>Stealing and selling high-end cars is a GTA tradition. GTA6 is set in Vice City (Miami), which means <strong>luxury cars everywhere</strong>. Look for sports cars in rich districts, take them to a chop shop or export dock, and sell for quick cash.</p>
-<p><strong>Best targets:</strong> Sports cars and SUVs parked in the Vice Beach and Downtown districts. Check parking garages — they often spawn high-value vehicles without witnesses.</p></div>
+<div class="card"><h3>载具出口</h3>
+<p>偷高端车辆出售是经典 GTA 玩法。GTA6 设定在 Vice City（迈阿密），富人区的豪车密度预计很高。</p></div>
 
-<div class="card"><h3>5. Collectibles & Hidden Packages — Easy Early Cash</h3>
-<p>Every GTA game has hidden packages scattered across the map. Finding them gives instant cash rewards plus completion bonuses. GTA5 had 100+ collectibles worth $2,000-$25,000 each in some categories.</p>
-<p><strong>Strategy:</strong> Don't go out of your way during missions, but grab any collectible you see. After finishing the story, use a guide to clean up the remaining ones. The full collection bonus is usually worth <strong>$500,000+</strong>.</p></div>
-
-<div class="card"><h3>6. Street Races & Side Activities — Repeatable Grinding</h3>
-<p>Races, taxi missions, bounty hunting, and other side activities are infinitely repeatable. They don't pay as much as heists, but they're <strong>zero-risk</strong> and available from the start of the game.</p>
-<p><strong>Most efficient:</strong> Street races with high-end cars (win more, get higher payouts). Unlock the fastest car you can afford, then chain races for consistent income. Taxi missions are safer but pay less per hour.</p></div>
-
-<div class="warning">Don't spend recklessly early in the game. The biggest mistake new players make is buying expensive cars and weapons before investing in income-generating properties. <strong>Assets first, toys second.</strong></div>
-
-<h2>Money-Making Priority Checklist</h2>
-<ol class="step-list">
-  <li>Complete early story missions for starting capital</li>
-  <li>Invest all spare cash in stocks before assassination missions</li>
-  <li>Buy your first income property as soon as it's available</li>
-  <li>Collect hidden packages while traveling between missions</li>
-  <li>Use stock market windfalls to buy more properties</li>
-  <li>Chain vehicle exports when you need quick cash</li>
-</ol>""",
+<div class="warning">以上均为系列传统模式的总结，并非 GTA6 确认内容。游戏发售后将更新具体金额排名、最佳投资时机和完整策略指南。</div>""",
         active_nav="money")
 
     # 8. Generate online guide page
@@ -673,69 +636,47 @@ def main():
         h1="GTA6 Online Guide",
         meta="Complete guide to GTA6 Online: heists, businesses, money making, crews, and PvP tips. Get ahead of other players from day one.",
         content="""<div class="disclaimer">
-  GTA6 Online details are based on GTA5 Online patterns and Rockstar's public statements. We will update with exact GTA6 Online data on launch day.
+  GTA6 Online 尚未上线。此页面将在游戏发售后更新。以下为目前已确认的公开信息。
 </div>
 
-<h2>What We Know About GTA6 Online</h2>
-<p>GTA Online (GTA5) has been Rockstar's biggest cash cow — generating <strong>$500M+ per year</strong> since 2013. GTA6 Online will be a separate, evolving multiplayer world built from lessons learned over a decade of GTA Online updates.</p>
-<p>Rockstar has confirmed that GTA6 Online will launch alongside the single-player game, not months later. Expect it to be available <strong>on day one</strong>.</p>
+<h2>已确认信息</h2>
+<ul>
+  <li>GTA6 Online 将与单机游戏<strong>同日上线</strong>（Rockstar 官方确认）</li>
+  <li>Rockstar 于 2023 年收购了 <strong>Cfx.re</strong>（FiveM 和 RedM 的开发商），暗示官方角色扮演功能</li>
+  <li>Take-Two 在财报电话会中多次表示 GTA Online 是"独立的持续更新平台"</li>
+</ul>
 
-<h2>Getting Started: First Things to Do</h2>
-<ol class="step-list">
-  <li><strong>Complete the tutorial</strong> — GTA Online always starts with a guided intro that gives you your first car, weapon, and property. Don't skip it — the free items are worth $100K+.</li>
-  <li><strong>Save your first $200K</strong> — don't waste money on clothes or car mods. Your first goal is a high-end apartment or business property.</li>
-  <li><strong>Join a crew</strong> — having 3 other players to run heists with is the single biggest money multiplier. Solo players earn 3-5x less.</li>
-  <li><strong>Buy the Buzzard (or GTA6 equivalent)</strong> — a weaponized helicopter is the best early investment. It spawns instantly and makes every mission faster.</li>
-  <li><strong>Do daily objectives</strong> — Rockstar gives $25K-$50K per day for completing 3 simple tasks. Free money, takes 15 minutes.</li>
-</ol>
-
-<h2>Best Money-Making Methods in GTA Online</h2>
+<h2>GTA5 Online 参考数据</h2>
+<p>以下为 GTA5 Online 的赚钱排名（仅供参考，GTA6 Online 经济系统可能完全不同）：</p>
 
 <table>
   <thead>
-    <tr><th>Method</th><th>Solo?</th><th>Est. $/Hour</th><th>Difficulty</th></tr>
+    <tr><th>方法</th><th>可单人?</th><th>时薪估算</th><th>难度</th></tr>
   </thead>
   <tbody>
-    <tr><td>Cayo Perico Heist</td><td>Yes</td><td>$1.5M-$2M</td><td>Medium</td></tr>
-    <tr><td>Diamond Casino Heist</td><td>No</td><td>$1M-$2.5M</td><td>Hard</td></tr>
-    <tr><td>Nightclub Warehouse</td><td>Yes</td><td>$40K-$80K</td><td>Easy</td></tr>
-    <tr><td>Bunker Sales</td><td>Yes</td><td>$135K-$210K</td><td>Medium</td></tr>
-    <tr><td>Vehicle Cargo (I/E)</td><td>Yes</td><td>$240K-$320K</td><td>Medium</td></tr>
-    <tr><td>Agency Contracts</td><td>Yes</td><td>$60K-$150K</td><td>Easy</td></tr>
-    <tr><td>MC Businesses</td><td>No</td><td>$60K-$100K</td><td>Medium</td></tr>
+    <tr><td>Cayo Perico 抢劫</td><td>是</td><td>.5M-M</td><td>中</td></tr>
+    <tr><td>钻石赌场抢劫</td><td>否</td><td>M-.5M</td><td>高</td></tr>
+    <tr><td>夜店仓库</td><td>是</td><td>0K-0K</td><td>低</td></tr>
+    <tr><td>地堡销售</td><td>是</td><td>35K-10K</td><td>中</td></tr>
+    <tr><td>载具出口 (I/E)</td><td>是</td><td>40K-20K</td><td>中</td></tr>
+    <tr><td>事务所合约</td><td>是</td><td>0K-50K</td><td>低</td></tr>
+    <tr><td>摩托帮生意</td><td>否</td><td>0K-00K</td><td>中</td></tr>
   </tbody>
 </table>
 
-<div class="tip">In GTA5 Online, the Cayo Perico heist is the best solo money maker. GTA6 will almost certainly have a similar repeatable solo heist — it was one of the most popular updates in GTA Online history.</div>
+<div class="tip">GTA5 Online 里 Cayo Perico 是最佳单人赚钱方式。GTA6 Online 极大概率会有类似的可重复单人抢劫——这是 GTA Online 历史上最受欢迎的一次更新。</div>
 
-<div class="card"><h3>Businesses: Passive Income is King</h3>
-<p>GTA Online's economy revolves around owning businesses that generate product over time. You buy supplies, wait for product to build up (even while offline in some cases), then sell for profit.</p>
-<p><strong>Priority order for buying businesses:</strong> Bunker (best solo profit) → Nightclub (passive warehouse) → Agency (easy contracts) → MC businesses (coke/meth/cash) → Vehicle warehouse.</p>
-<p><strong>Key tip:</strong> Always sell in <strong>invite-only lobbies</strong>. Public lobbies have griefers who destroy your cargo for fun. You lose everything if your sale vehicle is destroyed. Invite-only = zero risk.</p></div>
+<div class="warning">不要原价买鲨鱼卡。等每 2-3 个月一次的半价促销。或者干脆别买——单刷 Cayo Perico 的时薪比一张 0 鲨鱼卡值钱。</div>
 
-<div class="card"><h3>Heists: The Big Payouts</h3>
-<p>Heists are the core of GTA Online's endgame. They require 2-4 players and pay $500K-$2M+ per completion. The best heists are:</p>
-<p><strong>Cayo Perico</strong> — soloable, 1-hour setup + 15-minute finale, $1.5M average take. <strong>Diamond Casino</strong> — 2-4 players, harder but $2.5M max take. <strong>Doomsday Heist</strong> — 2-4 players, 3 acts, hardest PvE content but unlocks trade prices on powerful vehicles.</p>
-<p><strong>Crew strategy:</strong> Find 3 reliable players. Use voice chat. Split finale cuts 40/20/20/20 (host takes 40% since they paid setup costs). A coordinated crew running Cayo + Casino back-to-back can make <strong>$3M+ per night</strong>.</p></div>
+<h2>GTA6 Online 前瞻</h2>
+<p>GTA6 Online 将是<strong>全新起点</strong>——所有玩家从零开始。没有十年老号，没有满级玩家开着天煞炸鱼。<strong>GTA6 Online 头三个月会是 GTA 社区多年来最有趣的时期。</strong></p>
 
-<div class="card"><h3>PvP & Freemode Survival</h3>
-<p>GTA Online's freemode is a warzone. Other players will kill you on sight. Here's how to survive:</p>
-<p><strong>Passive mode</strong> — makes you immune to PvP damage. Use it when doing business sales or just exploring. Toggle it from the interaction menu.</p>
-<p><strong>Ghost Organization</strong> — hides you and your crew from the radar for 3 minutes. Essential for avoiding griefers during sales.</p>
-<p><strong>Best PvP vehicles:</strong> Oppressor MK2 (flying bike with homing missiles — the griefers' favorite), Nightshark (insanely tanky SUV, survives 27 homing missiles), Toreador (submarine car with boost + unlimited missiles).</p>
-<p><strong>Counter-griefing:</strong> If someone is spawn-killing you, go passive, call your most armored vehicle, drive away, then come back with an Oppressor or jet. Or just switch sessions — it's not worth the frustration.</p></div>
-
-<div class="warning">Never buy Shark Cards at full price. Wait for 50% off sales, which happen every 2-3 months. Better yet, don't buy them at all — grinding Cayo Perico solo makes more money per hour than a $20 Shark Card is worth.</div>
-
-<h2>GTA6 Online: What to Expect</h2>
-<p>GTA6 Online will likely be a <strong>clean slate</strong> — everyone starts fresh with a new character. This is the best time to play: no griefers with 10-year-old accounts and every weaponized vehicle. <strong>The first 3 months of GTA6 Online will be the most fun the GTA community has had in years.</strong></p>
-
-<p>Rockstar has hinted at:</p>
+<p>Rockstar 已暗示的内容：</p>
 <ul>
-  <li><strong>Evolving map</strong> — the GTA6 world will change over time with new buildings, events, and storylines (similar to Fortnite's seasonal map changes)</li>
-  <li><strong>Cross-play</strong> — likely between PlayStation and Xbox at minimum, possibly PC too</li>
-  <li><strong>Roleplay features</strong> — Rockstar bought the biggest GTA RP server team (Cfx.re, creators of FiveM) in 2023. Expect built-in RP mechanics</li>
-  <li><strong>Dedicated servers</strong> — no more peer-to-peer connections that plagued GTA5 Online with lag and modders</li>
+  <li><strong>动态地图</strong>——GTA6 世界会随时间变化，新建筑、活动、剧情线（类似 Fortnite 赛季制地图更新）</li>
+  <li><strong>跨平台联机</strong>——至少 PlayStation 和 Xbox 互通，PC 也有可能</li>
+  <li><strong>角色扮演功能</strong>——Rockstar 2023 年收购了最大 GTA RP 服务端团队 Cfx.re（FiveM 开发商），预计内建 RP 机制</li>
+  <li><strong>专用服务器</strong>——告别 GTA5 Online 的 P2P 连接（延迟高、外挂多）</li>
 </ul>""",
         active_nav="")
 
@@ -750,7 +691,7 @@ def main():
         active_nav="")
 
     # 10. Generate homepage
-    gen_homepage(len(mission_items), len(weapon_items), len(vehicle_items), len(collectible_items), len(side_items))
+    gen_homepage()
 
     # 11. Generate sitemap & robots
     pages = ["", "privacy.html", "cheats.html", "money-guide.html",

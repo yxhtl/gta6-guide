@@ -297,6 +297,18 @@ tr:hover td { background: var(--surface-hover); }
 .category-card h3 { color: var(--accent); margin-bottom: 6px; }
 .category-card p { color: var(--text-dim); font-size: 0.9rem; margin: 0; }
 
+.card-badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--accent-glow);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
 /* ---- Disclaimer ---- */
 .disclaimer {
   background: var(--surface);
