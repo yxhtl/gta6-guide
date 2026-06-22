@@ -368,11 +368,15 @@ def gen_generic(filename, title, h1, meta, content, active_nav=""):
     cheats_active = ' class="active"' if active_nav == "cheats" else ""
     money_active = ' class="active"' if active_nav == "money" else ""
 
+    # Compute relative path prefix based on directory depth
+    depth = filename.count("/")
+    rel = "../" * depth if depth > 0 else ""
+
     vars_dict = {
         "TITLE": title,
         "DESCRIPTION": f"{h1} — comprehensive GTA6 guide. {meta}",
-        "CSS_PATH": "",
-        "HOME_PATH": "",
+        "CSS_PATH": rel,
+        "HOME_PATH": rel,
         "PAGE_TITLE": h1,
         "H1": h1,
         "META": meta,
