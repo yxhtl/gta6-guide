@@ -654,19 +654,19 @@ def main():
     <tr><th>方法</th><th>可单人?</th><th>时薪估算</th><th>难度</th></tr>
   </thead>
   <tbody>
-    <tr><td>Cayo Perico 抢劫</td><td>是</td><td>.5M-M</td><td>中</td></tr>
-    <tr><td>钻石赌场抢劫</td><td>否</td><td>M-.5M</td><td>高</td></tr>
-    <tr><td>夜店仓库</td><td>是</td><td>0K-0K</td><td>低</td></tr>
-    <tr><td>地堡销售</td><td>是</td><td>35K-10K</td><td>中</td></tr>
-    <tr><td>载具出口 (I/E)</td><td>是</td><td>40K-20K</td><td>中</td></tr>
-    <tr><td>事务所合约</td><td>是</td><td>0K-50K</td><td>低</td></tr>
-    <tr><td>摩托帮生意</td><td>否</td><td>0K-00K</td><td>中</td></tr>
+    <tr><td>Cayo Perico 抢劫</td><td>是</td><td>$1.5M-$2M</td><td>中</td></tr>
+    <tr><td>钻石赌场抢劫</td><td>否</td><td>$1M-$2.5M</td><td>高</td></tr>
+    <tr><td>夜店仓库</td><td>是</td><td>$40K-$80K</td><td>低</td></tr>
+    <tr><td>地堡销售</td><td>是</td><td>$135K-$210K</td><td>中</td></tr>
+    <tr><td>载具出口 (I/E)</td><td>是</td><td>$240K-$320K</td><td>中</td></tr>
+    <tr><td>事务所合约</td><td>是</td><td>$60K-$150K</td><td>低</td></tr>
+    <tr><td>摩托帮生意</td><td>否</td><td>$60K-$100K</td><td>中</td></tr>
   </tbody>
 </table>
 
 <div class="tip">GTA5 Online 里 Cayo Perico 是最佳单人赚钱方式。GTA6 Online 极大概率会有类似的可重复单人抢劫——这是 GTA Online 历史上最受欢迎的一次更新。</div>
 
-<div class="warning">不要原价买鲨鱼卡。等每 2-3 个月一次的半价促销。或者干脆别买——单刷 Cayo Perico 的时薪比一张 0 鲨鱼卡值钱。</div>
+<div class="warning">不要原价买鲨鱼卡。等每 2-3 个月一次的半价促销。或者干脆别买——单刷 Cayo Perico 的时薪比一张 $20 鲨鱼卡值钱。</div>
 
 <h2>GTA6 Online 前瞻</h2>
 <p>GTA6 Online 将是<strong>全新起点</strong>——所有玩家从零开始。没有十年老号，没有满级玩家开着天煞炸鱼。<strong>GTA6 Online 头三个月会是 GTA 社区多年来最有趣的时期。</strong></p>
