@@ -1,0 +1,5 @@
+name,type_tag,damage,fire_rate,accuracy,range,price,description,acquisition,tips
+Pistol,Handgun,15,Medium,Medium,Short,Free,Standard semi-automatic pistol. Reliable but unremarkable.,Starting weapon.,Good for early game. Upgrade to a better handgun when you can afford it.
+Assault Rifle,Assault Rifle,35,High,Medium,Medium,$1200,Full-auto assault rifle. Good all-rounder for mid-range combat.,Purchased from Ammu-Nation.,Best mid-game weapon. Pair with a scope for long-range encounters.
+Shotgun,Shotgun,60,Low,Low,Short,$800,Pump-action shotgun. Devastating at close range.,Found in police stations or purchased.,One-shot kill at close range. Terrible beyond 20 meters.
+Sniper Rifle,Sniper,90,Very Low,Very High,Very Long,$3000,High-powered bolt-action sniper rifle.,Found on rooftops or purchased from Ammu-Nation.,Use cover and high ground. Headshots are always lethal.
