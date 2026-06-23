@@ -7,6 +7,7 @@ Usage: python scripts/build.py
 
 import csv
 import hashlib
+import html as _html
 import os
 import shutil
 from pathlib import Path
@@ -17,6 +18,14 @@ TEMPLATES = ROOT / "templates"
 DATA = ROOT / "data"
 
 # ---- Helpers ----
+
+class _SafeHTML(str):
+    """Marker for pre-escaped HTML — replace_all() won't double-escape it."""
+    pass
+
+def safe_html(s):
+    """Mark a string as pre-escaped HTML content."""
+    return _SafeHTML(s)
 
 def read_csv(name):
     """Read a CSV file and return list of dicts."""
@@ -33,6 +42,9 @@ def read_template(name):
 
 def write_page(rel_path, content):
     """Write a generated HTML page."""
+    # Prevent path traversal
+    if ".." in rel_path or rel_path.startswith(("/", "\\")):
+        raise ValueError(f"Invalid path (traversal attempt): {rel_path}")
     out = ROOT / rel_path
     out.parent.mkdir(parents=True, exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
@@ -40,8 +52,10 @@ def write_page(rel_path, content):
     print(f"  [OK] {rel_path}")
 
 def replace_all(text, vars_dict):
-    """Replace all {{KEY}} placeholders with values."""
+    """Replace all {{KEY}} placeholders. HTML-escapes by default; wrap values in safe_html() to skip."""
     for key, val in vars_dict.items():
+        if not isinstance(val, _SafeHTML):
+            val = _html.escape(str(val))
         text = text.replace("{{" + key + "}}", str(val))
     return text
 
@@ -99,17 +113,17 @@ def gen_mission(row, i, prev_filename, next_filename):
     for s in row.get("steps", "").split("|"):
         s = s.strip()
         if s:
-            steps_html += f"<li>{s}</li>\n"
+            steps_html += f"<li>{_html.escape(s)}</li>\n"
 
     tips = row.get("tips", "").strip()
     tips_html = ""
     if tips:
-        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{tips}</div>"
+        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{_html.escape(tips)}</div>"
 
     trivia = row.get("trivia", "").strip()
     trivia_html = ""
     if trivia:
-        trivia_html = f"<h2>Trivia</h2>\n<p>{trivia}</p>"
+        trivia_html = f"<h2>Trivia</h2>\n<p>{_html.escape(trivia)}</p>"
 
     # Assemble body with different section order per variant
     steps_block = f"<h2>{v['obj_heading']}</h2>\n<ol class=\"step-list\">\n{steps_html}</ol>"
@@ -121,7 +135,7 @@ def gen_mission(row, i, prev_filename, next_filename):
         mission_body = f"{steps_block}\n{trivia_html}\n{tips_html}"
     else:
         # Story-first: summary paragraph → objectives → combined tips+trivia
-        summary = f"<p>This mission takes place in <strong>{row.get('chapter','?')}</strong> and is rated <strong>{row.get('difficulty','Normal')}</strong>. Completing it rewards you with <strong>{row.get('reward','TBD')}</strong>.</p>"
+        summary = f"<p>This mission takes place in <strong>{_html.escape(row.get('chapter','?'))}</strong> and is rated <strong>{_html.escape(row.get('difficulty','Normal'))}</strong>. Completing it rewards you with <strong>{_html.escape(row.get('reward','TBD'))}</strong>.</p>"
         combined = tips_html + "\n" + trivia_html if tips_html or trivia_html else ""
         mission_body = f"{summary}\n{steps_block}\n{combined}"
 
@@ -141,12 +155,12 @@ def gen_mission(row, i, prev_filename, next_filename):
         "CHAPTER": row.get("chapter", "TBD"),
         "DIFFICULTY": row.get("difficulty", "Normal"),
         "REWARD": row.get("reward", "TBD"),
-        "MISSION_BODY": mission_body,
-        "MISSIONS_ACTIVE": ' class="active"',
+        "MISSION_BODY": safe_html(mission_body),
+        "MISSIONS_ACTIVE": safe_html(' class="active"'),
         "PARENT_SLUG": "story-missions",
         "PARENT_LABEL": "Missions",
-        "PREV_LINK": prev_html,
-        "NEXT_LINK": next_html,
+        "PREV_LINK": safe_html(prev_html),
+        "NEXT_LINK": safe_html(next_html),
     }
     filename = f"mission-{str(i+1).zfill(2)}-{slug}.html"
     write_page(f"story-missions/{filename}", replace_all(tpl, vars_dict))
@@ -171,18 +185,18 @@ def gen_item(row, category):
         if key in ("name", "type_tag", "description", "acquisition", "tips"):
             continue
         if val and val.strip():
-            stats_html += f'<div class="stat-item"><div class="stat-label">{key.replace("_"," ").title()}</div><div class="stat-value">{val}</div></div>\n'
+            stats_html += f'<div class="stat-item"><div class="stat-label">{_html.escape(key.replace("_"," ").title())}</div><div class="stat-value">{_html.escape(val)}</div></div>\n'
 
-    desc_text = row.get("description", f"Stats and details for {name} in GTA6.")
-    desc_html = f"<p>{desc_text}</p>"
+    desc_text = row.get("description", f"Stats and details for {_html.escape(name)} in GTA6.")
+    desc_html = f"<p>{_html.escape(desc_text)}</p>"
 
     tips = row.get("tips", "").strip()
     tips_html = ""
     if tips:
-        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{tips}</div>"
+        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{_html.escape(tips)}</div>"
 
     acq_text = row.get("acquisition", "TBD — game not yet released.")
-    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{acq_text}</p>"
+    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{_html.escape(acq_text)}</p>"
 
     # Assemble body with different section order per variant
     stats_block = f"<div class=\"stats-grid\">\n{stats_html}</div>"
@@ -208,9 +222,9 @@ def gen_item(row, category):
         "CATEGORY": category,
         "CATEGORY_LOWER": cat_lower,
         "TYPE_TAG": row.get("type_tag", category),
-        "ITEM_BODY": item_body,
-        "WEAPONS_ACTIVE": weapons_active,
-        "VEHICLES_ACTIVE": vehicles_active,
+        "ITEM_BODY": safe_html(item_body),
+        "WEAPONS_ACTIVE": safe_html(weapons_active),
+        "VEHICLES_ACTIVE": safe_html(vehicles_active),
     }
     out_dir = "weapons" if category == "Weapons" else "vehicles"
     filename = f"{slug}.html"
@@ -228,21 +242,21 @@ def gen_collectible(row):
     area = row.get("area", "TBD")
     type_tag = row.get("type_tag", "Collectible")
     reward = row.get("reward", "TBD")
-    desc_text = row.get("description", f"Where to find {name} in GTA6.")
+    desc_text = row.get("description", f"Where to find {_html.escape(name)} in GTA6.")
     acq_text = row.get("acquisition", "TBD — game not yet released.")
     tips = row.get("tips", "").strip()
 
     # Stats grid tailored for collectibles
-    stats_html = f'<div class="stat-item"><div class="stat-label">Area</div><div class="stat-value">{area}</div></div>\n'
-    stats_html += f'<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">{type_tag}</div></div>\n'
-    stats_html += f'<div class="stat-item"><div class="stat-label">Reward</div><div class="stat-value">{reward}</div></div>\n'
+    stats_html = f'<div class="stat-item"><div class="stat-label">Area</div><div class="stat-value">{_html.escape(area)}</div></div>\n'
+    stats_html += f'<div class="stat-item"><div class="stat-label">Type</div><div class="stat-value">{_html.escape(type_tag)}</div></div>\n'
+    stats_html += f'<div class="stat-item"><div class="stat-label">Reward</div><div class="stat-value">{_html.escape(reward)}</div></div>\n'
 
-    desc_html = f"<p>{desc_text}</p>"
+    desc_html = f"<p>{_html.escape(desc_text)}</p>"
     tips_html = ""
     if tips:
-        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{tips}</div>"
+        tips_html = f"<h2>Tips</h2>\n<div class=\"tip\">{_html.escape(tips)}</div>"
 
-    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{acq_text}</p>"
+    acq_block = f"<h2>{v['acq_heading']}</h2>\n<p>{_html.escape(acq_text)}</p>"
     stats_block = f"<div class=\"stats-grid\">\n{stats_html}</div>"
 
     if seed == 0:
@@ -261,9 +275,9 @@ def gen_collectible(row):
         "CATEGORY": "Collectibles",
         "CATEGORY_LOWER": "collectibles",
         "TYPE_TAG": type_tag,
-        "ITEM_BODY": item_body,
-        "WEAPONS_ACTIVE": "",
-        "VEHICLES_ACTIVE": "",
+        "ITEM_BODY": safe_html(item_body),
+        "WEAPONS_ACTIVE": safe_html(""),
+        "VEHICLES_ACTIVE": safe_html(""),
     }
     filename = f"{slug}.html"
     write_page(f"collectibles/{filename}", replace_all(tpl, vars_dict))
@@ -280,17 +294,17 @@ def gen_side_mission(row, i, prev_filename, next_filename):
     for s in row.get("steps", "").split("|"):
         s = s.strip()
         if s:
-            steps_html += f"<li>{s}</li>\n"
+            steps_html += f"<li>{_html.escape(s)}</li>\n"
 
     tips = row.get("tips", "").strip()
     tips_html = ""
     if tips:
-        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{tips}</div>"
+        tips_html = f"<h2>{v['tips_heading']}</h2>\n<div class=\"tip\">{_html.escape(tips)}</div>"
 
     trivia = row.get("trivia", "").strip()
     trivia_html = ""
     if trivia:
-        trivia_html = f"<h2>Trivia</h2>\n<p>{trivia}</p>"
+        trivia_html = f"<h2>Trivia</h2>\n<p>{_html.escape(trivia)}</p>"
 
     steps_block = f"<h2>{v['obj_heading']}</h2>\n<ol class=\"step-list\">\n{steps_html}</ol>"
     if seed == 0:
@@ -318,12 +332,12 @@ def gen_side_mission(row, i, prev_filename, next_filename):
         "CHAPTER": row.get("chapter", "TBD"),
         "DIFFICULTY": row.get("difficulty", "Normal"),
         "REWARD": row.get("reward", "TBD"),
-        "MISSION_BODY": mission_body,
-        "MISSIONS_ACTIVE": "",
+        "MISSION_BODY": safe_html(mission_body),
+        "MISSIONS_ACTIVE": safe_html(""),
         "PARENT_SLUG": "side-missions",
         "PARENT_LABEL": "Side Missions",
-        "PREV_LINK": prev_html,
-        "NEXT_LINK": next_html,
+        "PREV_LINK": safe_html(prev_html),
+        "NEXT_LINK": safe_html(next_html),
     }
     filename = f"side-{str(i+1).zfill(2)}-{slug}.html"
     write_page(f"side-missions/{filename}", replace_all(tpl, vars_dict))
@@ -339,8 +353,8 @@ def gen_index(category_name, items, css_path="", home_path=""):
     item_list = ""
     if items:
         for item in items:
-            extra = f" — {item.get('chapter', item.get('type_tag', ''))}" if item.get("chapter") or item.get("type_tag") else ""
-            item_list += f'<li><a href="{item["filename"]}"><span class="item-name">{item["name"]}</span><span class="item-meta">{extra}</span></a></li>\n'
+            extra = f" — {_html.escape(item.get('chapter', item.get('type_tag', '')))}" if item.get("chapter") or item.get("type_tag") else ""
+            item_list += f'<li><a href="{item["filename"]}"><span class="item-name">{_html.escape(item["name"])}</span><span class="item-meta">{extra}</span></a></li>\n'
     else:
         item_list = '<div class="disclaimer">GTA6 尚未发售，此分类的内容将在游戏发售后更新。请收藏本页，发售后第一时间回来查看。</div>'
 
@@ -358,10 +372,10 @@ def gen_index(category_name, items, css_path="", home_path=""):
         "HOME_PATH": home_path,
         "CATEGORY_NAME": category_name,
         "CATEGORY_DESC": desc,
-        "ITEM_LIST": item_list,
-        "MISSIONS_ACTIVE": missions_active,
-        "WEAPONS_ACTIVE": weapons_active,
-        "VEHICLES_ACTIVE": vehicles_active,
+        "ITEM_LIST": safe_html(item_list),
+        "MISSIONS_ACTIVE": safe_html(missions_active),
+        "WEAPONS_ACTIVE": safe_html(weapons_active),
+        "VEHICLES_ACTIVE": safe_html(vehicles_active),
     }
     write_page(f"{cat_slug}/index.html", replace_all(tpl, vars_dict))
 
@@ -383,9 +397,9 @@ def gen_generic(filename, title, h1, meta, content, active_nav=""):
         "PAGE_TITLE": h1,
         "H1": h1,
         "META": meta,
-        "CONTENT": content,
-        "CHEATS_ACTIVE": cheats_active,
-        "MONEY_ACTIVE": money_active,
+        "CONTENT": safe_html(content),
+        "CHEATS_ACTIVE": safe_html(cheats_active),
+        "MONEY_ACTIVE": safe_html(money_active),
     }
     write_page(filename, replace_all(tpl, vars_dict))
 
@@ -422,7 +436,7 @@ def gen_homepage():
         "PAGE_TITLE": "Home",
         "H1": "GTA6 Guide",
         "META": "Your ultimate resource for Grand Theft Auto VI",
-        "CONTENT": f"""<div class="hero">
+        "CONTENT": safe_html(f"""<div class="hero">
   <p>The most comprehensive resource for Grand Theft Auto VI — cheats, missions, weapons, vehicles, money guides, and more.</p>
 </div>
 
@@ -468,9 +482,9 @@ def gen_homepage():
     <h3>🌐 GTA Online</h3>
     <p>GTA5 Online 参考 + GTA6 Online 前瞻</p>
   </a>
-</div>""",
-        "CHEATS_ACTIVE": "",
-        "MONEY_ACTIVE": "",
+</div>"""),
+        "CHEATS_ACTIVE": safe_html(""),
+        "MONEY_ACTIVE": safe_html(""),
     }
     write_page("index.html", replace_all(tpl, vars_dict))
 
@@ -570,24 +584,34 @@ def main():
     <tr><th>Cheat</th><th>GTA5 Phone Number</th><th>Effect</th></tr>
   </thead>
   <tbody>
-    <tr><td>Invincibility</td><td><code class="cheat-code">1-999-724-654-5537</code></td><td>God mode for 5 minutes</td></tr>
-    <tr><td>Max Health & Armor</td><td><code class="cheat-code">1-999-887-853</code></td><td>Full health and armor refill</td></tr>
-    <tr><td>All Weapons</td><td><code class="cheat-code">1-999-866-587</code></td><td>Spawns all weapons with ammo</td></tr>
-    <tr><td>Raise Wanted Level</td><td><code class="cheat-code">1-999-3844-8483</code></td><td>Add one wanted star</td></tr>
-    <tr><td>Lower Wanted Level</td><td><code class="cheat-code">1-999-5299-3787</code></td><td>Remove one wanted star</td></tr>
-    <tr><td>Spawn Buzzard Helicopter</td><td><code class="cheat-code">1-999-289-9633</code></td><td>Spawns armed attack helicopter</td></tr>
-    <tr><td>Spawn Comet Sports Car</td><td><code class="cheat-code">1-999-266-38</code></td><td>Spawns a Comet sports car</td></tr>
-    <tr><td>Spawn Sanchez Dirt Bike</td><td><code class="cheat-code">1-999-633-7623</code></td><td>Spawns a Sanchez off-road bike</td></tr>
-    <tr><td>Parachute</td><td><code class="cheat-code">1-999-759-3483</code></td><td>Gives a parachute</td></tr>
-    <tr><td>Slow Motion</td><td><code class="cheat-code">1-999-756-966</code></td><td>Slow motion aiming (3 levels)</td></tr>
-    <tr><td>Change Weather</td><td><code class="cheat-code">1-999-625-348-7246</code></td><td>Cycle through weather types</td></tr>
-    <tr><td>Moon Gravity</td><td><code class="cheat-code">1-999-356-2837</code></td><td>Low gravity mode</td></tr>
-    <tr><td>Drunk Mode</td><td><code class="cheat-code">1-999-547-861</code></td><td>Drunken walking effect</td></tr>
-    <tr><td>Explosive Melee</td><td><code class="cheat-code">1-999-4684-2637</code></td><td>Punches cause explosions</td></tr>
-    <tr><td>Flaming Bullets</td><td><code class="cheat-code">1-999-462-363-4279</code></td><td>Bullets set targets on fire</td></tr>
-  </tbody>
-</table>
+    <tr><td>Invincibility (5 min)</td><td><code class="cheat-code">1-999-7246-545-537</code></td><td>God mode, lasts 5 minutes</td></tr>
+	    <tr><td>Max Health & Armor</td><td><code class="cheat-code">1-999-887-853</code></td><td>Full health and armor refill</td></tr>
+	    <tr><td>All Weapons & Ammo</td><td><code class="cheat-code">1-999-866-587</code></td><td>Spawns all weapons with full ammo</td></tr>
+	    <tr><td>Recharge Special Ability</td><td><code class="cheat-code">1-999-769-3787</code></td><td>Instantly refill special ability bar</td></tr>
+	    <tr><td>Raise Wanted Level</td><td><code class="cheat-code">1-999-3844-8483</code></td><td>Add one wanted star</td></tr>
+	    <tr><td>Lower Wanted Level</td><td><code class="cheat-code">1-999-5299-3787</code></td><td>Remove one wanted star</td></tr>
+	    <tr><td>Super Jump</td><td><code class="cheat-code">1-999-467-8648</code></td><td>Jump 10x higher</td></tr>
+	    <tr><td>Fast Run</td><td><code class="cheat-code">1-999-228-8463</code></td><td>Sprint significantly faster</td></tr>
+	    <tr><td>Fast Swim</td><td><code class="cheat-code">1-999-4684-4557</code></td><td>Swim at double speed</td></tr>
+	    <tr><td>Skyfall</td><td><code class="cheat-code">1-999-759-3255</code></td><td>Spawn in the sky, freefall to ground</td></tr>
+	    <tr><td>Explosive Bullets</td><td><code class="cheat-code">1-999-444-439</code></td><td>Bullets explode on impact</td></tr>
+	    <tr><td>Flaming Bullets</td><td><code class="cheat-code">1-999-462-363-4279</code></td><td>Bullets set targets on fire</td></tr>
+	    <tr><td>Explosive Melee</td><td><code class="cheat-code">1-999-4684-2637</code></td><td>Punches cause explosions</td></tr>
+	    <tr><td>Slow Motion Aim</td><td><code class="cheat-code">1-999-332-3393</code></td><td>Slow-mo while aiming (enter again for lv2/3, 4th to disable)</td></tr>
+	    <tr><td>Slow Motion (world)</td><td><code class="cheat-code">1-999-756-966</code></td><td>Entire world in slow motion (enter 3x for levels, 4th to disable)</td></tr>
+	    <tr><td>Spawn Buzzard</td><td><code class="cheat-code">1-999-2899-633</code></td><td>Spawns armed attack helicopter</td></tr>
+	    <tr><td>Spawn Comet</td><td><code class="cheat-code">1-999-266-38</code></td><td>Spawns Comet sports car</td></tr>
+	    <tr><td>Spawn Sanchez</td><td><code class="cheat-code">1-999-633-7623</code></td><td>Spawns Sanchez off-road dirt bike</td></tr>
+	    <tr><td>Spawn BMX</td><td><code class="cheat-code">1-999-226-348</code></td><td>Spawns BMX bicycle</td></tr>
+	    <tr><td>Spawn Stunt Plane</td><td><code class="cheat-code">1-999-227-678-676</code></td><td>Spawns fixed-wing stunt plane</td></tr>
+	    <tr><td>Parachute</td><td><code class="cheat-code">1-999-759-3483</code></td><td>Gives a parachute</td></tr>
+	    <tr><td>Moon Gravity</td><td><code class="cheat-code">1-999-356-2837</code></td><td>Low gravity for all vehicles and characters</td></tr>
+	    <tr><td>Slippery Cars</td><td><code class="cheat-code">1-999-7669-329</code></td><td>All cars drift like they're on ice</td></tr>
+	    <tr><td>Change Weather</td><td><code class="cheat-code">1-999-625-348-7246</code></td><td>Cycle through weather types</td></tr>
+	    <tr><td>Drunk Mode</td><td><code class="cheat-code">1-999-547-867</code></td><td>Character stumbles and sways as if drunk</td></tr>
 
+	  </tbody>
+	</table>
 <div class="tip">GTA5 cheats disable achievements/trophies when active. GTA6 will likely have the same restriction — save before using cheats.</div>
 
 <h2>What to Expect for GTA6 Cheats</h2>
@@ -595,7 +619,7 @@ def main():
 <p>此页面将在游戏发售后 24-48 小时内更新，届时会有社区挖掘出的所有 GTA6 作弊码。</p>
 
 <h2>Why Cheats Get Discovered Fast</h2>
-<p>Rockstar phone cheats follow a predictable pattern — the numbers spell words on a phone keypad. For example, GTA5'S invincibility number <code class="cheat-code">1-999-724-654-5537</code> spells <code class="cheat-code">1-999-PAIN-KILLER</code>. The community typically reverse-engineers all phone cheats within <strong>24-48 hours</strong> of release by brute-forcing common word combinations.</p>
+<p>Rockstar phone cheats follow a predictable pattern — the numbers spell words on a phone keypad. For example, GTA5'S invincibility number <code class="cheat-code">1-999-7246-545-537</code> spells <code class="cheat-code">1-999-PAIN-KILLER</code>. The community typically reverse-engineers all phone cheats within <strong>24-48 hours</strong> of release by brute-forcing common word combinations.</p>
 
 <p>We monitor cheat discovery threads on Reddit, GTAForums, and Twitter/X in real time during launch week. <strong>This page will be updated within hours of the first confirmed GTA6 cheat codes.</strong></p>""",
         active_nav="cheats")

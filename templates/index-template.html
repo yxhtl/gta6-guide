@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{TITLE}} - GTA6 Guide</title>
 <meta name="description" content="{{DESCRIPTION}}">
+<style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
 <link rel="stylesheet" href="{{CSS_PATH}}css/style.css">
 </head>
 <body>
@@ -38,5 +39,55 @@
     <p><a href="{{HOME_PATH}}privacy.html">Privacy Policy</a> · <a href="{{HOME_PATH}}index.html">Home</a></p>
   </div>
 </footer>
+<div class="page-transition-overlay covering" id="transition-overlay"><img class="overlay-art" src="{{CSS_PATH}}css/overlay-art.svg" alt="" aria-hidden="true"></div>
+<script>
+(function() {
+  var overlay = document.getElementById('transition-overlay');
+  var cleanupTimer = null;
+
+  function doEnter() {
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+
+    overlay.classList.add('covering');
+    overlay.offsetHeight;
+    overlay.classList.remove('covering');
+    overlay.classList.add('reveal');
+
+    var onDone = function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    };
+    overlay.addEventListener('transitionend', onDone);
+    cleanupTimer = setTimeout(function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    }, 600);
+  }
+
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) { overlay.classList.remove('cover'); }
+    doEnter();
+  });
+
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('//') || link.target === '_blank') return;
+    if (!href.endsWith('.html') && href !== '/' && !href.endsWith('/')) return;
+    if (link.getAttribute('download') || link.getAttribute('role') === 'tab') return;
+
+    e.preventDefault();
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+    overlay.classList.remove('reveal');
+    overlay.classList.remove('covering');
+    overlay.offsetHeight;
+    overlay.classList.add('cover');
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+})();
+</script>
 </body>
 </html>

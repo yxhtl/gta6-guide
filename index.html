@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTA6 Guide — Cheats, Missions, Weapons & More - GTA6 Guide</title>
+<title>GTA6 Guide — Cheats, Missions, Weapons &amp; More - GTA6 Guide</title>
 <meta name="description" content="The ultimate GTA6 guide: cheats, money tips, all story missions, weapons, vehicles, and collectibles. Updated regularly.">
+<!-- 临界内联样式：CSS 加载前 overlay 必须遮住页面，防止白屏闪烁 -->
+<style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "GTA6 Guide — Cheats, Missions, Weapons & More",
+  "headline": "GTA6 Guide — Cheats, Missions, Weapons &amp; More",
   "description": "The ultimate GTA6 guide: cheats, money tips, all story missions, weapons, vehicles, and collectibles. Updated regularly.",
   "about": { "@type": "VideoGame", "name": "Grand Theft Auto VI" }
 }
@@ -91,5 +93,59 @@
     <p><a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></p>
   </div>
 </footer>
+<div class="page-transition-overlay covering" id="transition-overlay"><img class="overlay-art" src="css/overlay-art.svg" alt="" aria-hidden="true"></div>
+<script>
+(function() {
+  var overlay = document.getElementById('transition-overlay');
+  var cleanupTimer = null;
+
+  function doEnter() {
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+
+    overlay.classList.add('covering');
+    overlay.offsetHeight; // 强制重排，确保 covering 状态生效
+    overlay.classList.remove('covering');
+    overlay.classList.add('reveal');
+
+    // 用 transitionend 等动画播完再清理，不会被 setTimeout 剪断
+    var onDone = function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    };
+    overlay.addEventListener('transitionend', onDone);
+    // 兜底：600ms 后强制清理（防 transitionend 不触发）
+    cleanupTimer = setTimeout(function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    }, 600);
+  }
+
+  // 首次加载 + bfcache 恢复都触发入场
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) { overlay.classList.remove('cover'); }
+    doEnter();
+  });
+
+  // 拦截内部链接 → 快门右→中滑入 → 跳转
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('//') || link.target === '_blank') return;
+    if (!href.endsWith('.html') && href !== '/' && !href.endsWith('/')) return;
+    if (link.getAttribute('download') || link.getAttribute('role') === 'tab') return;
+
+    e.preventDefault();
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+    overlay.classList.remove('reveal');
+    overlay.classList.remove('covering');
+    overlay.offsetHeight;
+    overlay.classList.add('cover');
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- 渐变天空 — 从亮紫到暗黑 -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0028"/>
+      <stop offset="35%" stop-color="#140048"/>
+      <stop offset="70%" stop-color="#0d0028"/>
+      <stop offset="100%" stop-color="#060014"/>
+    </linearGradient>
+    <!-- 霓虹光晕（饱和度翻倍，更显眼） -->
+    <radialGradient id="glowPink" cx="55%" cy="25%" r="55%">
+      <stop offset="0%" stop-color="#ff2d95" stop-opacity="0.30"/>
+      <stop offset="45%" stop-color="#ff2d95" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#ff2d95" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowPurple" cx="35%" cy="55%" r="50%">
+      <stop offset="0%" stop-color="#b347ea" stop-opacity="0.22"/>
+      <stop offset="45%" stop-color="#b347ea" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#b347ea" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="75%" cy="68%" r="45%">
+      <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.18"/>
+      <stop offset="45%" stop-color="#00d4ff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 主角色背后霓虹光 -->
+    <radialGradient id="charGlow" cx="1050" cy="480" r="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff2d95" stop-opacity="0.08"/>
+      <stop offset="50%" stop-color="#b347ea" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#ff2d95" stop-opacity="0"/>
+    </radialGradient>
+    <!-- 地平线 -->
+    <linearGradient id="horizon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ff2d95" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#ff2d95" stop-opacity="0.40"/>
+      <stop offset="45%" stop-color="#b347ea" stop-opacity="0.50"/>
+      <stop offset="70%" stop-color="#00d4ff" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 天空底 -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <!-- 光晕 -->
+  <rect width="1920" height="1080" fill="url(#glowPink)"/>
+  <rect width="1920" height="1080" fill="url(#glowPurple)"/>
+  <rect width="1920" height="1080" fill="url(#glowCyan)"/>
+
+  <!-- 角色背后光晕（让剪影从背景中跳出来） -->
+  <rect width="1920" height="1080" fill="url(#charGlow)"/>
+
+  <!-- 扫描线（微微可见的 retro 纹理） -->
+  <g opacity="0.04">
+    <line x1="0" y1="40" x2="1920" y2="40" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="80" x2="1920" y2="80" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="120" x2="1920" y2="120" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="160" x2="1920" y2="160" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="200" x2="1920" y2="200" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="240" x2="1920" y2="240" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="280" x2="1920" y2="280" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="320" x2="1920" y2="320" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="360" x2="1920" y2="360" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="400" x2="1920" y2="400" stroke="#fff" stroke-width="1"/>
+  </g>
+
+  <!-- 地平线 光条（更亮） -->
+  <rect x="0" y="720" width="1920" height="3" fill="url(#horizon)"/>
+  <rect x="0" y="720" width="1920" height="1" fill="#b347ea" opacity="0.25"/>
+
+  <!-- ====== 远景建筑群 ====== -->
+  <g fill="#030010" opacity="0.90">
+    <rect x="0" y="620" width="60" height="100"/>
+    <rect x="70" y="580" width="50" height="140"/>
+    <rect x="130" y="640" width="40" height="80"/>
+    <rect x="180" y="550" width="55" height="170"/>
+    <rect x="245" y="600" width="35" height="120"/>
+    <rect x="290" y="530" width="60" height="190"/>
+    <rect x="360" y="560" width="45" height="160"/>
+    <rect x="415" y="610" width="50" height="110"/>
+    <rect x="475" y="510" width="55" height="210"/>
+    <rect x="540" y="570" width="40" height="150"/>
+    <rect x="590" y="540" width="50" height="180"/>
+    <rect x="1200" y="590" width="50" height="130"/>
+    <rect x="1260" y="540" width="55" height="180"/>
+    <rect x="1325" y="570" width="40" height="150"/>
+    <rect x="1375" y="520" width="60" height="200"/>
+    <rect x="1445" y="600" width="45" height="120"/>
+    <rect x="1500" y="550" width="50" height="170"/>
+    <rect x="1560" y="620" width="55" height="100"/>
+    <rect x="1625" y="560" width="40" height="160"/>
+    <rect x="1675" y="510" width="50" height="210"/>
+    <rect x="1735" y="580" width="60" height="140"/>
+    <rect x="1805" y="610" width="45" height="110"/>
+    <rect x="1860" y="540" width="60" height="180"/>
+  </g>
+
+  <!-- ====== 棕榈树 1（左侧，前景大） ====== -->
+  <g transform="translate(180, 720)">
+    <path d="M0,0 C-3,-120 -5,-240 -6,-340 C-5,-360 -4,-375 0,-380" stroke="#02000c" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <g fill="#02000c">
+      <path d="M0,-380 C-70,-410 -140,-370 -160,-330 C-130,-350 -80,-380 0,-380"/>
+      <path d="M0,-380 C60,-420 130,-380 150,-340 C120,-360 70,-385 0,-380"/>
+      <path d="M0,-380 C-80,-450 -90,-490 -60,-500 C-70,-470 -40,-420 0,-380"/>
+      <path d="M0,-380 C70,-460 80,-500 50,-510 C60,-480 30,-430 0,-380"/>
+      <path d="M0,-380 C-15,-460 -5,-510 0,-520 C5,-510 10,-460 0,-380"/>
+    </g>
+  </g>
+
+  <!-- ====== 棕榈树 2（右侧，中景） ====== -->
+  <g transform="translate(1700, 720)">
+    <path d="M0,0 C2,-100 3,-200 2,-280 C2,-300 1,-310 0,-315" stroke="#02000c" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <g fill="#02000c">
+      <path d="M0,-315 C-55,-340 -110,-305 -125,-275 C-100,-290 -55,-315 0,-315"/>
+      <path d="M0,-315 C50,-350 105,-315 120,-285 C95,-300 50,-320 0,-315"/>
+      <path d="M0,-315 C-60,-375 -70,-410 -45,-420 C-55,-390 -30,-350 0,-315"/>
+      <path d="M0,-315 C55,-385 65,-420 40,-430 C50,-400 25,-360 0,-315"/>
+      <path d="M0,-315 C-10,-385 0,-425 2,-435 C4,-415 8,-375 0,-315"/>
+    </g>
+  </g>
+
+  <!-- ====== 棕榈树 3（中间远景） ====== -->
+  <g transform="translate(650, 720)">
+    <path d="M0,0 C-1,-60 -1,-120 0,-170 C0,-180 0,-185 0,-188" stroke="#030010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <g fill="#030010">
+      <path d="M0,-188 C-35,-205 -70,-185 -80,-165 C-60,-175 -35,-188 0,-188"/>
+      <path d="M0,-188 C30,-210 65,-190 75,-170 C55,-180 30,-190 0,-188"/>
+      <path d="M0,-188 C-40,-225 -45,-250 -30,-255 C-38,-235 -18,-210 0,-188"/>
+      <path d="M0,-188 C35,-230 40,-255 25,-260 C33,-240 13,-215 0,-188"/>
+      <path d="M0,-188 C-5,-230 0,-255 0,-260 C5,-250 5,-225 0,-188"/>
+    </g>
+  </g>
+
+  <!-- ====== 棕榈树 4（右侧远景） ====== -->
+  <g transform="translate(1380, 720)">
+    <path d="M0,0 C1,-70 1,-140 0,-195 C0,-205 0,-210 0,-212" stroke="#030010" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <g fill="#030010">
+      <path d="M0,-212 C-38,-232 -75,-210 -85,-185 C-65,-198 -38,-212 0,-212"/>
+      <path d="M0,-212 C35,-238 70,-215 80,-190 C60,-202 35,-214 0,-212"/>
+      <path d="M0,-212 C-45,-255 -50,-280 -35,-285 C-42,-265 -20,-235 0,-212"/>
+      <path d="M0,-212 C40,-260 45,-285 30,-290 C38,-270 16,-240 0,-212"/>
+      <path d="M0,-212 C-5,-260 0,-285 0,-290 C5,-280 5,-250 0,-212"/>
+    </g>
+  </g>
+
+  <!-- ====== 主角色（C位偏右，男性，Jason 风格） ====== -->
+  <!-- 角色几乎全黑 + 霓虹天空背景 = 高对比剪影 -->
+  <g fill="#010006">
+    <!-- 头发 -->
+    <ellipse cx="1050" cy="275" rx="50" ry="28"/>
+    <!-- 头部 -->
+    <ellipse cx="1050" cy="310" rx="43" ry="50"/>
+    <!-- 脖子 -->
+    <rect x="1033" y="352" width="34" height="28" rx="6"/>
+    <!-- 躯干 -->
+    <path d="M1020,378 C1012,378 1002,385 1000,400 L990,620 C988,634 1000,642 1012,642 L1088,642 C1100,642 1112,634 1110,620 L1100,400 C1098,385 1088,378 1080,378 Z"/>
+    <!-- 衬衫领口（同色，略深做细节） -->
+    <path d="M1035,378 L1050,410 L1065,378" fill="#020008"/>
+    <!-- 左臂（自然下垂，微屈） -->
+    <path d="M1008,385 C965,400 935,445 928,500 C922,545 930,590 935,600 C928,580 925,545 935,505 C945,460 970,425 1005,402 Z"/>
+    <ellipse cx="930" cy="605" rx="18" ry="12" transform="rotate(-15, 930, 605)"/>
+    <!-- 右臂（手搭腰间，经典 GTA 站姿） -->
+    <path d="M1095,385 C1130,400 1150,430 1145,470 C1140,500 1125,520 1110,530 C1125,515 1135,495 1135,475 C1135,450 1120,420 1095,405 Z"/>
+    <ellipse cx="1112" cy="532" rx="16" ry="12" transform="rotate(10, 1112, 532)"/>
+    <!-- 左腿 -->
+    <path d="M1005,638 C998,700 988,785 982,860 C980,890 988,910 1000,920 C988,900 985,875 988,855 C992,815 1000,740 1006,642 Z"/>
+    <!-- 右腿 -->
+    <path d="M1078,638 C1085,698 1092,780 1096,850 C1098,880 1090,900 1080,915 C1090,895 1093,870 1090,850 C1086,810 1080,740 1075,642 Z"/>
+    <!-- 鞋子 -->
+    <path d="M978,918 C970,925 975,935 1005,935 C1010,935 1008,925 1000,920" fill="#03000a"/>
+  </g>
+
+  <!-- ====== 第二角色（左侧，较小，面向右） ====== -->
+  <g fill="#020008">
+    <ellipse cx="520" cy="380" rx="32" ry="37"/>
+    <rect x="508" y="412" width="24" height="22" rx="4"/>
+    <path d="M498,432 C492,432 484,438 483,450 L475,630 C473,640 482,648 492,648 L548,648 C558,648 567,640 565,630 L557,450 C555,438 548,432 542,432 Z"/>
+    <path d="M488,438 C460,450 438,480 432,520 C428,550 432,580 438,595 C432,578 430,550 436,520 C442,485 458,458 485,445 Z"/>
+    <ellipse cx="434" cy="598" rx="14" ry="10" transform="rotate(-10, 434, 598)"/>
+    <path d="M558,438 C580,452 595,480 590,510 C588,530 580,545 572,552 C580,540 585,520 585,505 C585,485 572,458 555,448 Z"/>
+    <ellipse cx="574" cy="554" rx="13" ry="10" transform="rotate(5, 574, 554)"/>
+    <path d="M480,644 C475,692 470,760 466,820 C464,845 472,862 480,870 C470,855 468,835 470,820 C474,785 480,720 484,646 Z"/>
+    <path d="M542,644 C546,690 550,755 554,812 C555,835 548,850 540,860 C548,845 550,825 548,810 C545,775 542,715 538,646 Z"/>
+  </g>
+
+  <!-- ====== 霓虹装饰 ====== -->
+  <circle cx="300" cy="720" r="2" fill="#ff2d95" opacity="0.5"/>
+  <circle cx="510" cy="720" r="2" fill="#b347ea" opacity="0.4"/>
+  <circle cx="750" cy="720" r="3" fill="#00d4ff" opacity="0.35"/>
+  <circle cx="1100" cy="720" r="2" fill="#ff2d95" opacity="0.45"/>
+  <circle cx="1400" cy="720" r="2" fill="#b347ea" opacity="0.4"/>
+  <circle cx="1650" cy="720" r="2" fill="#00d4ff" opacity="0.35"/>
+
+  <!-- VICE CITY 大字背景纹理 -->
+  <text x="960" y="940" text-anchor="middle" font-family="'Arial Black', Impact, sans-serif" font-size="180" font-weight="900" letter-spacing="30" fill="#ff2d95" opacity="0.05">VICE CITY</text>
+
+  <!-- 底部霓虹线条 -->
+  <line x1="0" y1="1010" x2="1920" y2="1010" stroke="#b347ea" stroke-width="1" opacity="0.12"/>
+  <line x1="0" y1="1018" x2="1920" y2="1018" stroke="#00d4ff" stroke-width="1" opacity="0.08"/>
+</svg>
