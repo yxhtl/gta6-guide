@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTA6 Guide — Pre-Order, Cheats, Missions, Weapons &amp; More - GTA6 Guide</title>
 <meta name="description" content="GTA6 pre-order guide, cheats, money tips, all story missions, weapons, vehicles, and collectibles. Pre-orders open June 25, 2026. Updated regularly.">
-<!-- 临界内联样式：CSS 加载前 overlay 必须遮住页面，防止白屏闪烁 -->
+<meta property="og:title" content="GTA6 Guide — Pre-Order, Cheats, Missions, Weapons &amp; More - GTA6 Guide">
+<meta property="og:description" content="GTA6 pre-order guide, cheats, money tips, all story missions, weapons, vehicles, and collectibles. Pre-orders open June 25, 2026. Updated regularly.">
+<meta property="og:url" content="https://gta6.yxhtl.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="GTA6 Guide">
+<meta property="og:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GTA6 Guide — Pre-Order, Cheats, Missions, Weapons &amp; More - GTA6 Guide">
+<meta name="twitter:description" content="GTA6 pre-order guide, cheats, money tips, all story missions, weapons, vehicles, and collectibles. Pre-orders open June 25, 2026. Updated regularly.">
+<meta name="twitter:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<!-- Critical inline styles: overlay must cover the page before CSS loads to prevent white flash -->
 <style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
@@ -50,7 +62,7 @@
 <div class="home-sections">
   <div class="home-section">
     <h2>🛒 Pre-Order GTA6</h2>
-    <p>预购 6 月 25 日开启。版本对比、价格预测、各平台预购渠道汇总。</p>
+    <p>Pre-orders open June 25. Edition comparison, price estimates, and where to buy across all platforms.</p>
     <a href="pre-order.html" class="home-section-link">Pre-Order Guide →</a>
   </div>
   <div class="home-section">
@@ -81,11 +93,11 @@
   </a>
   <a href="cheats.html" class="category-card">
     <h3>🎮 Cheats</h3>
-    <p>GTA5 作弊码参考 + GTA6 发售后更新</p>
+    <p>GTA5 cheat codes reference — GTA6 codes will be added after launch</p>
   </a>
   <a href="money-guide.html" class="category-card">
     <h3>💰 Money Guide</h3>
-    <p>赚钱方法通用思路，发售后更新具体数据</p>
+    <p>Proven money-making strategies — detailed data will be updated after launch</p>
   </a>
   <a href="collectibles/index.html" class="category-card">
     <h3>📍 Collectibles</h3>
@@ -99,7 +111,7 @@
   </a>
   <a href="online/index.html" class="category-card">
     <h3>🌐 GTA Online</h3>
-    <p>GTA5 Online 参考 + GTA6 Online 前瞻</p>
+    <p>GTA5 Online reference + GTA6 Online preview</p>
   </a>
 </div>
 </main>
@@ -119,30 +131,30 @@
     if (cleanupTimer) clearTimeout(cleanupTimer);
 
     overlay.classList.add('covering');
-    overlay.offsetHeight; // 强制重排，确保 covering 状态生效
+    overlay.offsetHeight; // Force reflow so the covering state takes effect
     overlay.classList.remove('covering');
     overlay.classList.add('reveal');
 
-    // 用 transitionend 等动画播完再清理，不会被 setTimeout 剪断
+    // Wait for animation to finish via transitionend, then clean up — won't be cut short by setTimeout
     var onDone = function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     };
     overlay.addEventListener('transitionend', onDone);
-    // 兜底：600ms 后强制清理（防 transitionend 不触发）
+    // Fallback: force cleanup after 600ms (in case transitionend doesn't fire)
     cleanupTimer = setTimeout(function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     }, 600);
   }
 
-  // 首次加载 + bfcache 恢复都触发入场
+  // Trigger enter animation on both first load and bfcache restore
   window.addEventListener('pageshow', function(e) {
     if (e.persisted) { overlay.classList.remove('cover'); }
     doEnter();
   });
 
-  // 拦截内部链接 → 快门右→中滑入 → 跳转
+  // Intercept internal links → slide curtain right-to-center → navigate
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a');
     if (!link) return;

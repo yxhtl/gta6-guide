@@ -106,6 +106,7 @@ def gen_mission(row, i, prev_filename, next_filename):
     """Generate a single mission page with randomized paragraph structure."""
     tpl = read_template("mission.html")
     slug = make_slug(row.get("mission_name", f"mission-{i+1}"))
+    filename = f"mission-{str(i+1).zfill(2)}-{slug}.html"
     seed = hash_seed(row.get("mission_name", ""))
     v = MISSION_VARIANT[seed]
 
@@ -161,8 +162,9 @@ def gen_mission(row, i, prev_filename, next_filename):
         "PARENT_LABEL": "Missions",
         "PREV_LINK": safe_html(prev_html),
         "NEXT_LINK": safe_html(next_html),
+        "OG_URL": f"story-missions/{filename}",
+        "OG_TYPE": "article",
     }
-    filename = f"mission-{str(i+1).zfill(2)}-{slug}.html"
     write_page(f"story-missions/{filename}", replace_all(tpl, vars_dict))
     return {
         "name": row["mission_name"],
@@ -212,6 +214,8 @@ def gen_item(row, category):
 
     weapons_active = ' class="active"' if category == "Weapons" else ""
     vehicles_active = ' class="active"' if category == "Vehicles" else ""
+    out_dir = "weapons" if category == "Weapons" else "vehicles"
+    filename = f"{slug}.html"
 
     vars_dict = {
         "TITLE": f"{name} - GTA6 {category}",
@@ -225,9 +229,9 @@ def gen_item(row, category):
         "ITEM_BODY": safe_html(item_body),
         "WEAPONS_ACTIVE": safe_html(weapons_active),
         "VEHICLES_ACTIVE": safe_html(vehicles_active),
+        "OG_URL": f"{out_dir}/{filename}",
+        "OG_TYPE": "article",
     }
-    out_dir = "weapons" if category == "Weapons" else "vehicles"
-    filename = f"{slug}.html"
     write_page(f"{out_dir}/{filename}", replace_all(tpl, vars_dict))
     return {"name": name, "type_tag": row.get("type_tag", ""), "filename": filename}
 
@@ -236,6 +240,7 @@ def gen_collectible(row):
     tpl = read_template("item.html")
     name = row.get("name", "Unknown Collectible")
     slug = make_slug(name)
+    filename = f"{slug}.html"
     seed = hash_seed(name)
     v = ITEM_VARIANT[seed]
 
@@ -278,8 +283,9 @@ def gen_collectible(row):
         "ITEM_BODY": safe_html(item_body),
         "WEAPONS_ACTIVE": safe_html(""),
         "VEHICLES_ACTIVE": safe_html(""),
+        "OG_URL": f"collectibles/{filename}",
+        "OG_TYPE": "article",
     }
-    filename = f"{slug}.html"
     write_page(f"collectibles/{filename}", replace_all(tpl, vars_dict))
     return {"name": name, "type_tag": type_tag, "filename": filename}
 
@@ -287,6 +293,7 @@ def gen_side_mission(row, i, prev_filename, next_filename):
     """Generate a single side mission page — reuses mission template with randomized structure."""
     tpl = read_template("mission.html")
     slug = make_slug(row.get("mission_name", f"side-{i+1}"))
+    filename = f"side-{str(i+1).zfill(2)}-{slug}.html"
     seed = hash_seed(row.get("mission_name", ""))
     v = MISSION_VARIANT[seed]
 
@@ -338,8 +345,9 @@ def gen_side_mission(row, i, prev_filename, next_filename):
         "PARENT_LABEL": "Side Missions",
         "PREV_LINK": safe_html(prev_html),
         "NEXT_LINK": safe_html(next_html),
+        "OG_URL": f"side-missions/{filename}",
+        "OG_TYPE": "article",
     }
-    filename = f"side-{str(i+1).zfill(2)}-{slug}.html"
     write_page(f"side-missions/{filename}", replace_all(tpl, vars_dict))
     return {
         "name": row["mission_name"],
@@ -356,7 +364,7 @@ def gen_index(category_name, items, css_path="", home_path=""):
             extra = f" — {_html.escape(item.get('chapter', item.get('type_tag', '')))}" if item.get("chapter") or item.get("type_tag") else ""
             item_list += f'<li><a href="{item["filename"]}"><span class="item-name">{_html.escape(item["name"])}</span><span class="item-meta">{extra}</span></a></li>\n'
     else:
-        item_list = '<div class="disclaimer">GTA6 尚未发售，此分类的内容将在游戏发售后更新。请收藏本页，发售后第一时间回来查看。</div>'
+        item_list = '<div class="disclaimer">GTA6 is not yet released. Content for this category will be added after the game launches. Bookmark this page and check back after release!</div>'
 
     missions_active = ' class="active"' if "Mission" in category_name else ""
     weapons_active = ' class="active"' if "Weapon" in category_name else ""
@@ -376,6 +384,8 @@ def gen_index(category_name, items, css_path="", home_path=""):
         "MISSIONS_ACTIVE": safe_html(missions_active),
         "WEAPONS_ACTIVE": safe_html(weapons_active),
         "VEHICLES_ACTIVE": safe_html(vehicles_active),
+        "OG_URL": f"{cat_slug}/",
+        "OG_TYPE": "website",
     }
     write_page(f"{cat_slug}/index.html", replace_all(tpl, vars_dict))
 
@@ -390,6 +400,11 @@ def gen_generic(filename, title, h1, meta, content, active_nav=""):
     depth = filename.count("/")
     rel = "../" * depth if depth > 0 else ""
 
+    # Compute OG URL: strip trailing index.html for cleaner social share URLs
+    og_url = filename
+    if og_url.endswith("index.html"):
+        og_url = og_url[:-10]  # strip "index.html", keep directory
+
     vars_dict = {
         "TITLE": title,
         "DESCRIPTION": f"{h1} — comprehensive GTA6 guide. {meta}",
@@ -402,6 +417,8 @@ def gen_generic(filename, title, h1, meta, content, active_nav=""):
         "PREORDER_ACTIVE": safe_html(preorder_active),
         "CHEATS_ACTIVE": safe_html(cheats_active),
         "MONEY_ACTIVE": safe_html(money_active),
+        "OG_URL": og_url,
+        "OG_TYPE": "article",
     }
     write_page(filename, replace_all(tpl, vars_dict))
 
@@ -448,7 +465,7 @@ def gen_homepage():
 <div class="home-sections">
   <div class="home-section">
     <h2>🛒 Pre-Order GTA6</h2>
-    <p>预购 6 月 25 日开启。版本对比、价格预测、各平台预购渠道汇总。</p>
+    <p>Pre-orders open June 25. Edition comparison, price estimates, and where to buy across all platforms.</p>
     <a href="pre-order.html" class="home-section-link">Pre-Order Guide →</a>
   </div>
   <div class="home-section">
@@ -479,11 +496,11 @@ def gen_homepage():
   </a>
   <a href="cheats.html" class="category-card">
     <h3>🎮 Cheats</h3>
-    <p>GTA5 作弊码参考 + GTA6 发售后更新</p>
+    <p>GTA5 cheat codes reference — GTA6 codes will be added after launch</p>
   </a>
   <a href="money-guide.html" class="category-card">
     <h3>💰 Money Guide</h3>
-    <p>赚钱方法通用思路，发售后更新具体数据</p>
+    <p>Proven money-making strategies — detailed data will be updated after launch</p>
   </a>
   <a href="collectibles/index.html" class="category-card">
     <h3>📍 Collectibles</h3>
@@ -497,12 +514,14 @@ def gen_homepage():
   </a>
   <a href="online/index.html" class="category-card">
     <h3>🌐 GTA Online</h3>
-    <p>GTA5 Online 参考 + GTA6 Online 前瞻</p>
+    <p>GTA5 Online reference + GTA6 Online preview</p>
   </a>
 </div>"""),
         "PREORDER_ACTIVE": safe_html(""),
         "CHEATS_ACTIVE": safe_html(""),
         "MONEY_ACTIVE": safe_html(""),
+        "OG_URL": "",
+        "OG_TYPE": "website",
     }
     write_page("index.html", replace_all(tpl, vars_dict))
 
@@ -633,8 +652,8 @@ def main():
 <div class="tip">GTA5 cheats disable achievements/trophies when active. GTA6 will likely have the same restriction — save before using cheats.</div>
 
 <h2>What to Expect for GTA6 Cheats</h2>
-<p>GTA6 尚未发售，无法确认任何作弊码。以下是基于 GTA 系列传统的推测——实际以发售后为准。</p>
-<p>此页面将在游戏发售后 24-48 小时内更新，届时会有社区挖掘出的所有 GTA6 作弊码。</p>
+<p>GTA6 is not yet released — no cheat codes can be confirmed. The information below is based on GTA series tradition and will be updated after launch.</p>
+<p>This page will be updated with community-discovered GTA6 cheat codes within 24-48 hours of release.</p>
 
 <h2>Why Cheats Get Discovered Fast</h2>
 <p>Rockstar phone cheats follow a predictable pattern — the numbers spell words on a phone keypad. For example, GTA5'S invincibility number <code class="cheat-code">1-999-7246-545-537</code> spells <code class="cheat-code">1-999-PAIN-KILLER</code>. The community typically reverse-engineers all phone cheats within <strong>24-48 hours</strong> of release by brute-forcing common word combinations.</p>
@@ -648,156 +667,156 @@ def main():
         h1="GTA6 Money Guide — How to Make Money Fast",
         meta="Best ways to earn money fast in GTA6: heists, stock market manipulation, side businesses, vehicle exports, collectible hunting. Detailed strategies and payout estimates.",
         content="""<div class="disclaimer">
-  GTA6 尚未发售，此页面的具体赚钱方法、金额数据将在游戏发售后第一周内更新。以下内容基于 GTA 系列历代经验和已公开的 GTA6 信息整理。
+  GTA6 is not yet released. Specific money-making methods and payout figures will be updated within the first week after launch. The content below is based on GTA series history and confirmed GTA6 public information.
 </div>
 
-<h2>GTA 系列赚钱通用思路</h2>
-<p>以下为 GTA 系列历代的赚钱模式总结——GTA6 很可能延续这些系统，但具体数值和机制以发售后为准。每个方法都附了<strong>为什么有效</strong>和<strong>发售后怎么验证</strong>，方便游戏解锁后第一时间确认。</p>
+<h2>GTA Series Money-Making Fundamentals</h2>
+<p>These are the core money-making patterns across every GTA title — GTA6 will likely continue these systems, but specific numbers and mechanics are subject to change after launch. Each method includes <strong>why it works</strong> and <strong>what to verify after launch</strong>, so you can hit the ground running on day one.</p>
 
 <div class="card">
-  <h3>💰 1. 主线任务 (Story Missions)</h3>
-  <p>完成主线剧情是任何 GTA 游戏最主要的资金来源。以 GTA5 为例，通关全部 69 个主线任务可获得约 <strong>$30-40M</strong>（含抢劫分成）。后期抢劫任务单次报酬可达 <strong>$20M+</strong>（The Big Score，明显方案）。</p>
-  <p><strong>核心策略：</strong>部分任务中通过选择不同方案（如 GTA5 的「明显」vs「隐秘」）影响最终报酬。在任务前手动存档，比较两种方案的实际收益——通常隐秘方案分钱的人少、你自己拿得多。</p>
-  <p><strong>发售后验证点：</strong>哪几个任务报酬最高？哪些任务有方案选择？选哪个方案净收益最大（扣除 crew cut）？</p>
+  <h3>💰 1. Story Missions</h3>
+  <p>Main story missions are the primary income source in any GTA game. In GTA5, completing all 69 story missions yields roughly <strong>$30-40M</strong> (including heist cuts). Late-game heists can pay <strong>$20M+</strong> each (The Big Score, obvious approach).</p>
+  <p><strong>Key strategy:</strong> Some missions let you choose between approaches (e.g. GTA5's "obvious" vs "subtle") that affect your final payout. Manual-save before the mission, compare both outcomes — the subtle approach usually means fewer people taking a cut, so you keep more.</p>
+  <p><strong>Post-launch verification:</strong> Which missions pay the most? Which have approach choices? Which approach yields the highest net (after crew cuts)?</p>
 </div>
 
 <div class="card">
-  <h3>📈 2. 股市操纵 (Stock Market)</h3>
-  <p>GTA5 首次引入受玩家行为影响的股票市场——LCN（单机）和 BAWSAQ（联网）。核心逻辑：<strong>在任务前买入受影响的股票，任务完成后股价暴涨时卖出</strong>。</p>
-  <p>GTA5 典型案例：</p>
+  <h3>📈 2. Stock Market Manipulation</h3>
+  <p>GTA5 introduced a player-influenced stock market — LCN (single-player) and BAWSAQ (online). The core mechanic: <strong>buy affected stocks BEFORE a mission, sell AFTER the mission when prices spike</strong>.</p>
+  <p>GTA5 classic examples:</p>
   <ul>
-    <li><strong>LifeInvader 任务前</strong>做空 LifeInvader → 任务后股价暴跌 → 获利</li>
-    <li><strong>Hotel Assassination 前</strong>买入 Betta Pharmaceuticals → 任务后涨 50%+</li>
-    <li><strong>The Multi Target Assassination 前</strong>全仓 Debonaire → 涨 80%，再换 Redwood → 涨 300%</li>
+    <li><strong>Before LifeInvader mission:</strong> short LifeInvader → stock crashes after mission → profit</li>
+    <li><strong>Before Hotel Assassination:</strong> buy Betta Pharmaceuticals → rises 50%+ after mission</li>
+    <li><strong>Before The Multi Target Assassination:</strong> go all-in on Debonaire → rises 80%, switch to Redwood → rises 300%</li>
   </ul>
-  <p>如果 GTA6 延续此系统（大概率会——Rockstar 没理由砍掉这个广受好评的机制），股市操纵将是<strong>全游戏收益最高的赚钱方式</strong>，没有之一。</p>
-  <p><strong>发售后验证点：</strong>LCN 股票池有哪些？哪些任务影响哪些股票？涨幅多少？最佳买入时机（任务前第几个 checkpoint）？</p>
+  <p>If GTA6 keeps this system (highly likely — Rockstar has no reason to cut a universally praised mechanic), stock manipulation will be <strong>the single most profitable money-making method in the entire game</strong>.</p>
+  <p><strong>Post-launch verification:</strong> What's in the LCN stock pool? Which missions affect which stocks? How big are the price swings? When is the optimal buy-in point (which checkpoint before the mission)?</p>
 </div>
 
 <div class="card">
-  <h3>🏢 3. 资产与产业 (Properties &amp; Businesses)</h3>
-  <p>GTA 系列从 Vice City 开始就引入了资产系统——购买产业后解锁专属任务，完成后该产业开始定期产生收入。</p>
-  <p>GTA Vice City 的经典例子：</p>
+  <h3>🏢 3. Properties &amp; Businesses</h3>
+  <p>The GTA series has had a property system since Vice City — buy a business, complete its unique missions, and it starts generating recurring income.</p>
+  <p>Classic GTA Vice City examples:</p>
   <ul>
-    <li><strong>Malibu Club</strong> — 12 万买入，完成后每周收入 $10K</li>
-    <li><strong>Cherry Popper Ice Cream</strong> — 2 万买入，完成后每周 $3K</li>
-    <li><strong>Print Works</strong> — 7 万买入，完成后每周 $8K（全游戏最后资产）</li>
+    <li><strong>Malibu Club</strong> — $120K purchase, $10K/week after missions</li>
+    <li><strong>Cherry Popper Ice Cream</strong> — $20K purchase, $3K/week after missions</li>
+    <li><strong>Print Works</strong> — $70K purchase, $8K/week after missions (final asset in the game)</li>
   </ul>
-  <p>GTA5 则把产业系统简化了——买下就赚钱，不需要做任务。GTA6 大概率回归 Vice City 的「买资产 → 做任务 → 开始收钱」模式，因为设在新 Vice City 致敬原版是情理之中。</p>
-  <p><strong>发售后验证点：</strong>有多少可购买资产？哪些资产的投资回报率最高？需要多少任务才能「回本」？</p>
+  <p>GTA5 simplified properties to "buy and earn" with no missions required. GTA6 will likely return to the Vice City model of "buy property → complete missions → collect income," since it's set in a new Vice City and paying homage to the original makes perfect sense.</p>
+  <p><strong>Post-launch verification:</strong> How many purchasable properties? Which have the best ROI? How many missions until each one "pays for itself"?</p>
 </div>
 
 <div class="card">
-  <h3>🚗 4. 载具出口 (Vehicle Export)</h3>
-  <p>偷高端车辆出售是 GTA 最经典的赚钱玩法之一，从 GTA1 就开始有了。GTA5 Online 中的 Import/Export 更新把这个系统做成了最赚钱的 solo 活动之一。</p>
-  <p>GTA6 设定在 Vice City（迈阿密），富人区（Starfish Island、Vice Beach 沿岸）的豪车密度预计非常高。如果单机模式也有类似 GTA Online I/E 的系统，那么：</p>
+  <h3>🚗 4. Vehicle Export</h3>
+  <p>Stealing and selling high-end vehicles has been a staple GTA money-maker since GTA1. GTA Online's Import/Export update turned it into one of the most profitable solo activities.</p>
+  <p>GTA6 is set in Vice City (Miami) — expect very high luxury car density in wealthy areas (Starfish Island, Vice Beach coastline). If single-player has an I/E-like system:</p>
   <ul>
-    <li>高端跑车（类似 Infernus、Cheetah）→ 预计 $80K-$150K/辆</li>
-    <li>豪华轿车 → 预计 $40K-$80K/辆</li>
-    <li>改装后出售 → 售价 +20%~50%（GTA5 的 Los Santos Customs 逻辑）</li>
+    <li>High-end sports cars (Infernus, Cheetah tier) → est. $80K-$150K each</li>
+    <li>Luxury sedans → est. $40K-$80K each</li>
+    <li>Sell after modding → +20%-50% value (GTA5's Los Santos Customs logic)</li>
   </ul>
-  <p><strong>发售后验证点：</strong>有没有专门的出口任务线？最高价值的车在哪里刷新？改装增值比例是多少？</p>
+  <p><strong>Post-launch verification:</strong> Is there a dedicated export mission line? Where do the highest-value cars spawn? What's the modding value multiplier?</p>
 </div>
 
 <div class="card">
-  <h3>🏪 5. 抢劫商店与随机事件 (Robberies &amp; Random Events)</h3>
-  <p>GTA5 的便利店抢劫每次只能拿几百到一千多，性价比不高。但 GTA6 中这个系统可能被大幅扩展：</p>
+  <h3>🏪 5. Robberies &amp; Random Events</h3>
+  <p>GTA5's convenience store robberies only paid a few hundred to a thousand dollars — not great ROI. But GTA6 may significantly expand this system:</p>
   <ul>
-    <li><strong>便利店</strong> — 快速现金 $200-$2K，低风险</li>
-    <li><strong>运钞车</strong> — 随机刷新，$5K-$25K（GTA5 逻辑）</li>
-    <li><strong>随机事件</strong> — 还钱包、送人、追小偷，$500-$10K，有些还会解锁特殊奖励</li>
-    <li><strong>ATM 劫持</strong> — GTA6 如果加入（NPC 会在 ATM 取钱），跟在后面抢</li>
+    <li><strong>Convenience stores</strong> — quick $200-$2K cash, low risk</li>
+    <li><strong>Armored trucks</strong> — random spawns, $5K-$25K (GTA5 logic)</li>
+    <li><strong>Random events</strong> — returning wallets, giving rides, chasing thieves, $500-$10K, some unlock special rewards</li>
+    <li><strong>ATM muggings</strong> — if GTA6 NPCs use ATMs, follow and rob them after they withdraw</li>
   </ul>
-  <p><strong>发售后验证点：</strong>运钞车的刷新点和金额？哪些随机事件奖励最高？有没有隐藏的特殊随机事件？</p>
+  <p><strong>Post-launch verification:</strong> Armored truck spawn points and payout range? Which random events give the best rewards? Any hidden special random events?</p>
 </div>
 
 <div class="card">
-  <h3>📦 6. 收集品 (Collectibles)</h3>
-  <p>每代 GTA 都有隐藏收集品，找到一定数量后会给现金奖励和特殊载具：</p>
+  <h3>📦 6. Collectibles</h3>
+  <p>Every GTA has hidden collectibles — find enough and you get cash rewards plus special vehicles:</p>
   <ul>
-    <li>GTA Vice City — 100 隐藏包裹 → $100K + Hunter 直升机 + Rhino 坦克</li>
-    <li>GTA SA — 100 涂鸦 + 50 照片 + 50 马蹄铁 + 50 牡蛎 → 总计 $300K+</li>
-    <li>GTA5 — 50 信件碎片 + 50 太空船零件 + 30 核废料 + 50 信号干扰器 → 总计 $1.5M+</li>
+    <li>GTA Vice City — 100 hidden packages → $100K + Hunter helicopter + Rhino tank</li>
+    <li>GTA SA — 100 tags + 50 photos + 50 horseshoes + 50 oysters → $300K+ total</li>
+    <li>GTA5 — 50 letter scraps + 50 spaceship parts + 30 nuclear waste + 50 signal jammers → $1.5M+ total</li>
   </ul>
-  <p>收集品的好处是<strong>零风险</strong>——不开枪、不惹警察，纯跑图就能拿钱。GTA6 地图比 GTA5 更大，预计收集品数量也会创新高。</p>
-  <p><strong>发售后验证点：</strong>有哪些类型的收集品？总数多少？找到多少给什么奖励？有没有像 GTA5 那样完成全收集给特殊任务？</p>
+  <p>The best thing about collectibles: <strong>zero risk</strong> — no shooting, no wanted levels, just explore and collect. GTA6's map is larger than GTA5's, so expect a new record for collectible count.</p>
+  <p><strong>Post-launch verification:</strong> What types of collectibles exist? Total count? Rewards at each milestone? Does 100% completion unlock a special mission like GTA5?</p>
 </div>
 
 <div class="card">
-  <h3>🏎️ 7. 可重复竞赛与活动 (Repeatable Events)</h3>
-  <p>赛车、铁人三项、跳伞、高尔夫、网球——GTA5 的这些副活动虽然来钱慢，但可以无限重复：</p>
+  <h3>🏎️ 7. Repeatable Races &amp; Activities</h3>
+  <p>Street races, triathlons, parachuting, golf, tennis — GTA5's side activities may pay slowly, but they're infinitely repeatable:</p>
   <ul>
-    <li>街头赛车 — 第一名 $1K-$5K，低风险</li>
-    <li>铁人三项 — 第一名 $5K-$15K，但一次要跑 20-30 分钟</li>
-    <li>跳伞 — 完成所有跳伞点 $1K-$3K/个</li>
+    <li>Street races — 1st place $1K-$5K, low risk</li>
+    <li>Triathlons — 1st place $5K-$15K, but 20-30 minutes per run</li>
+    <li>Parachuting — $1K-$3K per jump for completing all locations</li>
   </ul>
-  <p>GTA6 新增可能性：街头格斗/地下拳赛（Vice City 传统）、快艇竞速（水地图变大）、无人机竞速（现代迈阿密特色）。</p>
-  <p><strong>发售后验证点：</strong>有哪些可重复活动？最高收益的活动是什么？有没有每日/每周奖励？</p>
+  <p>Possible GTA6 additions: street fighting/underground boxing (Vice City tradition), speedboat racing (larger water map), drone racing (modern Miami flavor).</p>
+  <p><strong>Post-launch verification:</strong> What repeatable activities exist? Which pays the most per hour? Are there daily/weekly bonuses?</p>
 </div>
 
 <div class="card">
-  <h3>🎯 8. 赏金与暗杀任务 (Bounty &amp; Assassination)</h3>
-  <p>GTA5 的暗杀任务（Lester 的 5 个暗杀）除了本身给 $5K-$15K 报酬外，还有一个更重要的功能——<strong>配合股市操纵放大收益</strong>。GTA4 和 RDR2 也有赏金猎人机制。</p>
-  <p>GTA6 如果结合了暗杀 + 股市 + 赏金系统，这将是一条完整的赚钱链条：接暗杀 → 投资目标竞争对手的股票 → 执行暗杀 → 股价涨 → 卖出。</p>
-  <p><strong>发售后验证点：</strong>暗杀任务有多少个？每个暗杀影响哪些股票？赏金系统是否存在？</p>
+  <h3>🎯 8. Bounties &amp; Assassination Missions</h3>
+  <p>GTA5's assassination missions (Lester's 5 missions) pay $5K-$15K each, but their real value is <strong>pairing them with stock market manipulation for enormous amplified returns</strong>. GTA4 and RDR2 also had bounty hunting mechanics.</p>
+  <p>If GTA6 combines assassinations + stock market + bounty hunting, it creates a complete money-making chain: accept contract → invest in target's competitor → execute the hit → stock rises → cash out.</p>
+  <p><strong>Post-launch verification:</strong> How many assassination missions? Which stock does each one affect? Does a bounty system exist?</p>
 </div>
 
-<h2>赚钱方法优先级排名（基于 GTA 系列经验预估）</h2>
-<p>以下是按预期收益排的优先级。游戏发售后会用实际数据替换。</p>
+<h2>Money Method Priority Ranking (Estimated Based on GTA Series History)</h2>
+<p>Ranked by expected payout. These will be replaced with actual data after launch.</p>
 
 <table>
   <thead>
-    <tr><th>等级</th><th>方法</th><th>单次/周期收益</th><th>可重复性</th><th>难度</th><th>前置条件</th></tr>
+    <tr><th>Tier</th><th>Method</th><th>Payout (per run / period)</th><th>Repeatable?</th><th>Difficulty</th><th>Prerequisites</th></tr>
   </thead>
   <tbody>
-    <tr><td><strong>S</strong></td><td>股市操纵（配合暗杀任务）</td><td>几百万～上亿</td><td>一次性（每个暗杀一次机会）</td><td>低</td><td>主线推进到暗杀解锁</td></tr>
-    <tr><td><strong>S</strong></td><td>主线抢劫任务（最终章）</td><td>$20M-$50M</td><td>一次性</td><td>中～高</td><td>主线推进到终章</td></tr>
-    <tr><td><strong>A</strong></td><td>支线产业经营</td><td>$10K-$100K/周</td><td>持续被动收入</td><td>中</td><td>买下产业+完成产业任务</td></tr>
-    <tr><td><strong>A</strong></td><td>收集品全清</td><td>$500K-$2M 总计</td><td>一次性</td><td>低</td><td>自由探索</td></tr>
-    <tr><td><strong>B</strong></td><td>载具出口</td><td>$40K-$150K/辆</td><td>可重复（冷却时间未知）</td><td>低～中</td><td>解锁出口联系人</td></tr>
-    <tr><td><strong>B</strong></td><td>暗杀任务（不含股市）</td><td>$5K-$20K/个</td><td>一次性（5-10个）</td><td>中</td><td>主线推进</td></tr>
-    <tr><td><strong>C</strong></td><td>抢劫商店 / 运钞车</td><td>$200-$25K/次</td><td>可重复（随机刷新）</td><td>低</td><td>无</td></tr>
-    <tr><td><strong>C</strong></td><td>可重复竞赛</td><td>$1K-$15K/次</td><td>无限可重复</td><td>低～中</td><td>无</td></tr>
-    <tr><td><strong>D</strong></td><td>随机事件 / 还钱包</td><td>$500-$10K/次</td><td>随机触发</td><td>极低</td><td>无</td></tr>
+    <tr><td><strong>S</strong></td><td>Stock market (paired with assassinations)</td><td>Millions to hundreds of millions</td><td>One-shot (per assassination opportunity)</td><td>Low</td><td>Story progress to unlock assassinations</td></tr>
+    <tr><td><strong>S</strong></td><td>Final story heists</td><td>$20M-$50M</td><td>One-shot</td><td>Med–High</td><td>Story progress to final chapter</td></tr>
+    <tr><td><strong>A</strong></td><td>Side business income</td><td>$10K-$100K/week</td><td>Recurring passive income</td><td>Medium</td><td>Purchase property + complete business missions</td></tr>
+    <tr><td><strong>A</strong></td><td>100% collectible completion</td><td>$500K-$2M total</td><td>One-shot</td><td>Low</td><td>Free roam access</td></tr>
+    <tr><td><strong>B</strong></td><td>Vehicle export</td><td>$40K-$150K per vehicle</td><td>Repeatable (cooldown TBD)</td><td>Low–Med</td><td>Unlock export contact</td></tr>
+    <tr><td><strong>B</strong></td><td>Assassination missions (no stock play)</td><td>$5K-$20K each</td><td>One-shot (5-10 missions)</td><td>Medium</td><td>Story progress</td></tr>
+    <tr><td><strong>C</strong></td><td>Store robberies / armored trucks</td><td>$200-$25K per hit</td><td>Repeatable (random spawns)</td><td>Low</td><td>None</td></tr>
+    <tr><td><strong>C</strong></td><td>Repeatable races &amp; activities</td><td>$1K-$15K per run</td><td>Infinitely repeatable</td><td>Low–Med</td><td>None</td></tr>
+    <tr><td><strong>D</strong></td><td>Random events / wallet returns</td><td>$500-$10K per event</td><td>Random trigger</td><td>Very low</td><td>None</td></tr>
   </tbody>
 </table>
 
-<h2>GTA6 经济系统预测</h2>
-<p>基于 Rockstar 近年设计趋势（GTA Online 的经济模型 + RDR2 的沉浸感设计），对 GTA6 经济系统有几个关键预判：</p>
+<h2>GTA6 Economy System Predictions</h2>
+<p>Based on Rockstar's recent design trends (GTA Online's economic model + RDR2's immersion-first design), here are key predictions for GTA6's economy:</p>
 
 <div class="card">
-  <h3>预判 1：资产系统回归 Vice City 模式</h3>
-  <p>GTA6 设定在 Vice City，致敬原版是必然的。原版 VC 最受好评的设计之一就是<strong>买资产 → 做任务 → 开始收租</strong>的循环。GTA5 把这个砍成了纯买入就赚钱，玩家反馈不如 VC 有成就感。Rockstar 没理由不把 V C 最好的系统带回来。</p>
+  <h3>Prediction 1: Vice City-Style Property System Returns</h3>
+  <p>GTA6 is set in Vice City — paying homage to the original is inevitable. One of the most beloved mechanics from the original VC was the <strong>buy property → complete missions → collect income</strong> loop. GTA5 removed the mission requirement and made properties pure passive income, which players found less rewarding than VC's approach. Rockstar has every reason to bring back VC's best system.</p>
 </div>
 
 <div class="card">
-  <h3>预判 2：经济更贴近现实</h3>
-  <p>RDR2 的经济系统比 GTA5 严格得多——钱不好赚、物价合理、每笔消费都要掂量。GTA6 很可能介于两者之间：比 GTA5 更难赚大钱，但不像 RDR2 那么紧。这样可以<strong>延长单机游戏时长</strong>（GTA5 太容易赚到所有钱然后无事可做）。</p>
+  <h3>Prediction 2: More Realistic Economy</h3>
+  <p>RDR2's economy was much tighter than GTA5's — money was harder to earn, prices were grounded, and every purchase required consideration. GTA6 will likely land between the two: harder to get rich than GTA5, but not as restrictive as RDR2. This <strong>extends single-player playtime</strong> (GTA5 made it too easy to buy everything and run out of things to do).</p>
 </div>
 
 <div class="card">
-  <h3>预判 3：洗钱机制</h3>
-  <p>GTA Online 已经有基础的「洗钱」概念（不同生意有不同风险）。GTA6 单机可能引入更复杂的合法/非法收入平衡——非法活动来钱快但吸引警察注意，合法产业稳定但回报慢。这跟 Vice City 原版的「掩护公司」概念一脉相承。</p>
+  <h3>Prediction 3: Money Laundering Mechanics</h3>
+  <p>GTA Online already has basic "money laundering" concepts (different businesses carry different risk levels). GTA6 single-player may introduce a more complex legal/illegal income balance — illegal activities pay fast but attract police attention, while legal businesses are stable but slow to grow. This directly echoes Vice City's original "front company" concept.</p>
 </div>
 
 <div class="card">
-  <h3>预判 4：鲨鱼卡生态延续</h3>
-  <p>GTA Online 靠鲨鱼卡赚了几十亿美元，Take-Two 不可能放弃这个印钞机。GTA6 单机模式大概率没有氪金，但 GTA6 Online 肯定有。提前了解哪些东西在 Online 里最贵、最值得花游戏币买，可以帮助你决定单机把钱花在哪里。</p>
+  <h3>Prediction 4: Shark Card Ecosystem Continues</h3>
+  <p>GTA Online has made billions from Shark Cards — Take-Two isn't giving up that cash cow. GTA6 single-player will almost certainly have no microtransactions, but GTA6 Online definitely will. Understanding which items are most expensive and most worth buying with in-game currency in Online can help you decide where to spend your single-player money.</p>
 </div>
 
-<h2>发售后第一时间赚钱路线图</h2>
-<p>如果你是冲着「发售后尽快通关并财富自由」来的，这是推荐的行动顺序：</p>
+<h2>Day-One Money Roadmap</h2>
+<p>If you're aiming to "beat the game fast and reach financial freedom," here's the recommended action order:</p>
 
 <ol class="step-list">
-  <li><strong>完成序章（估计 3-5 个任务）</strong>——解锁自由探索模式，这是做任何事情的前提。</li>
-  <li><strong>不要乱花钱</strong>——初期资金紧张，武器捡敌人的就行，车偷来用。GTA 系列通用原则：前三分之一的游戏里，$10K 比后期 $100K 更值钱。</li>
-  <li><strong>注意暗杀任务</strong>——如果你看到 Lester 或类似角色的暗杀任务出现，<strong>停下来</strong>。先查攻略确认每个暗杀对应哪只股票，再去做。这是全游戏收益最高的赚钱机会，一次错过损失几百万。</li>
-  <li><strong>尽早买第一处资产</strong>——一旦可以买产业，优先买能解锁任务的那种（不是纯收租的）。做完产业任务后它会持续产生被动收入。</li>
-  <li><strong>收集品随缘拿，别强迫症</strong>——通关过程中顺手拿，通关后用攻略补完。收集品是「锦上添花」不是「雪中送炭」。</li>
-  <li><strong>通关后回来查更新</strong>——本页面会在游戏发售后一周内更新所有实际金额、最佳投资时机和完整策略。</li>
+  <li><strong>Complete the prologue (est. 3-5 missions)</strong> — this unlocks free roam, the prerequisite for everything else.</li>
+  <li><strong>Don't waste money early</strong> — funds are tight at the start. Pick up weapons from enemies, steal cars. Universal GTA rule: $10K in the first third of the game is worth more than $100K in the endgame.</li>
+  <li><strong>Watch for assassination missions</strong> — if you see one from Lester or a similar character, <strong>stop</strong>. Check a guide first to confirm which stock it affects, THEN do the mission. These are the highest-ROI money opportunities in the entire game — miss one and you lose millions.</li>
+  <li><strong>Buy your first property early</strong> — once properties become available, prioritize ones that unlock missions (not pure passive income). After completing the property missions, it generates recurring passive income.</li>
+  <li><strong>Grab collectibles casually, don't obsess</strong> — pick them up as you play through the story, then use a guide to finish after beating the game. Collectibles are "nice to have," not "need to have."</li>
+  <li><strong>Come back after beating the game</strong> — this page will be updated with all actual payout figures, optimal investment timing, and complete strategies within a week of launch.</li>
 </ol>
 
-<div class="warning">以上所有排名和金额均为基于 GTA 系列传统的预估值，并非 GTA6 确认数据。游戏发售后将更新具体金额排名、每只股票的最佳买卖时机、所有资产的投资回报率分析和完整赚钱策略指南。请收藏本页，发售后第一时间回来看最终版。</div>""",
+<div class="warning">All rankings and dollar amounts above are estimates based on GTA series history, NOT confirmed GTA6 data. After launch, this page will be updated with actual payout rankings, optimal buy/sell timing for every stock, ROI analysis for all properties, and a complete money-making strategy guide. Bookmark this page and come back right after launch for the final version.</div>""",
         active_nav="money")
 
     # 8. Generate online guide page
@@ -806,47 +825,47 @@ def main():
         h1="GTA6 Online Guide",
         meta="Complete guide to GTA6 Online: heists, businesses, money making, crews, and PvP tips. Get ahead of other players from day one.",
         content="""<div class="disclaimer">
-  GTA6 Online 尚未上线。此页面将在游戏发售后更新。以下为目前已确认的公开信息。
+  GTA6 Online is not yet available. This page will be updated after launch. Below is currently confirmed public information.
 </div>
 
-<h2>已确认信息</h2>
+<h2>Confirmed Information</h2>
 <ul>
-  <li>GTA6 Online 将与单机游戏<strong>同日上线</strong>（Rockstar 官方确认）</li>
-  <li>Rockstar 于 2023 年收购了 <strong>Cfx.re</strong>（FiveM 和 RedM 的开发商），暗示官方角色扮演功能</li>
-  <li>Take-Two 在财报电话会中多次表示 GTA Online 是"独立的持续更新平台"</li>
+  <li>GTA6 Online will launch <strong>same day as single-player</strong> (confirmed by Rockstar)</li>
+  <li>Rockstar acquired <strong>Cfx.re</strong> (developers of FiveM and RedM) in 2023, hinting at official roleplay features</li>
+  <li>Take-Two has repeatedly called GTA Online "a standalone, continuously updated platform" in earnings calls</li>
 </ul>
 
-<h2>GTA5 Online 参考数据</h2>
-<p>以下为 GTA5 Online 的赚钱排名（仅供参考，GTA6 Online 经济系统可能完全不同）：</p>
+<h2>GTA5 Online Reference Data</h2>
+<p>Below are GTA5 Online money-making rankings (for reference only — GTA6 Online's economy may be completely different):</p>
 
 <table>
   <thead>
-    <tr><th>方法</th><th>可单人?</th><th>时薪估算</th><th>难度</th></tr>
+    <tr><th>Method</th><th>Soloable?</th><th>Est. Hourly</th><th>Difficulty</th></tr>
   </thead>
   <tbody>
-    <tr><td>Cayo Perico 抢劫</td><td>是</td><td>$1.5M-$2M</td><td>中</td></tr>
-    <tr><td>钻石赌场抢劫</td><td>否</td><td>$1M-$2.5M</td><td>高</td></tr>
-    <tr><td>夜店仓库</td><td>是</td><td>$40K-$80K</td><td>低</td></tr>
-    <tr><td>地堡销售</td><td>是</td><td>$135K-$210K</td><td>中</td></tr>
-    <tr><td>载具出口 (I/E)</td><td>是</td><td>$240K-$320K</td><td>中</td></tr>
-    <tr><td>事务所合约</td><td>是</td><td>$60K-$150K</td><td>低</td></tr>
-    <tr><td>摩托帮生意</td><td>否</td><td>$60K-$100K</td><td>中</td></tr>
+    <tr><td>Cayo Perico Heist</td><td>Yes</td><td>$1.5M-$2M</td><td>Medium</td></tr>
+    <tr><td>Diamond Casino Heist</td><td>No</td><td>$1M-$2.5M</td><td>High</td></tr>
+    <tr><td>Nightclub Warehouse</td><td>Yes</td><td>$40K-$80K</td><td>Low</td></tr>
+    <tr><td>Bunker Sales</td><td>Yes</td><td>$135K-$210K</td><td>Medium</td></tr>
+    <tr><td>Vehicle Export (I/E)</td><td>Yes</td><td>$240K-$320K</td><td>Medium</td></tr>
+    <tr><td>Agency Contracts</td><td>Yes</td><td>$60K-$150K</td><td>Low</td></tr>
+    <tr><td>MC Businesses</td><td>No</td><td>$60K-$100K</td><td>Medium</td></tr>
   </tbody>
 </table>
 
-<div class="tip">GTA5 Online 里 Cayo Perico 是最佳单人赚钱方式。GTA6 Online 极大概率会有类似的可重复单人抢劫——这是 GTA Online 历史上最受欢迎的一次更新。</div>
+<div class="tip">Cayo Perico is the best solo money-maker in GTA5 Online. GTA6 Online will almost certainly have a similar repeatable solo heist — it was the most popular update in GTA Online history.</div>
 
-<div class="warning">不要原价买鲨鱼卡。等每 2-3 个月一次的半价促销。或者干脆别买——单刷 Cayo Perico 的时薪比一张 $20 鲨鱼卡值钱。</div>
+<div class="warning">Never buy Shark Cards at full price. Wait for the 50% off sales every 2-3 months. Or just don't buy them — solo grinding Cayo Perico pays better per hour than a $20 Shark Card.</div>
 
-<h2>GTA6 Online 前瞻</h2>
-<p>GTA6 Online 将是<strong>全新起点</strong>——所有玩家从零开始。没有十年老号，没有满级玩家开着天煞炸鱼。<strong>GTA6 Online 头三个月会是 GTA 社区多年来最有趣的时期。</strong></p>
+<h2>GTA6 Online Preview</h2>
+<p>GTA6 Online will be a <strong>completely fresh start</strong> — every player begins from zero. No decade-old accounts, no max-level players griefing newbies in jets. <strong>The first three months of GTA6 Online will be the most exciting period in the GTA community in years.</strong></p>
 
-<p>Rockstar 已暗示的内容：</p>
+<p>What Rockstar has hinted at:</p>
 <ul>
-  <li><strong>动态地图</strong>——GTA6 世界会随时间变化，新建筑、活动、剧情线（类似 Fortnite 赛季制地图更新）</li>
-  <li><strong>跨平台联机</strong>——至少 PlayStation 和 Xbox 互通，PC 也有可能</li>
-  <li><strong>角色扮演功能</strong>——Rockstar 2023 年收购了最大 GTA RP 服务端团队 Cfx.re（FiveM 开发商），预计内建 RP 机制</li>
-  <li><strong>专用服务器</strong>——告别 GTA5 Online 的 P2P 连接（延迟高、外挂多）</li>
+  <li><strong>Dynamic map</strong> — GTA6's world will evolve over time, with new buildings, events, and storylines (similar to Fortnite's seasonal map updates)</li>
+  <li><strong>Cross-play</strong> — at minimum between PlayStation and Xbox, with PC possibly included</li>
+  <li><strong>Roleplay features</strong> — Rockstar acquired Cfx.re (the largest GTA RP server team and FiveM developers) in 2023, suggesting built-in RP mechanics</li>
+  <li><strong>Dedicated servers</strong> — goodbye to GTA5 Online's P2P connections (high latency, rampant cheating)</li>
 </ul>""",
         active_nav="")
 
@@ -861,10 +880,10 @@ def main():
   <p class="preorder-hero-date">Launching <strong>November 19, 2026</strong></p>
 </div>
 
-<div class="tip">此页面将在 6 月 25 日预购开启后更新实际价格和链接。以下版本信息基于 Rockstar 历代发行模式和 Take-Two 财报数据推测。</div>
+<div class="tip">This page will be updated with actual prices and links when pre-orders open on June 25. Edition info below is based on Rockstar's historical release patterns and Take-Two earnings data.</div>
 
-<h2>GTA6 版本对比</h2>
-<p>Rockstar 通常为旗舰作品推出 3 个版本：「标准版」「特别/豪华版」「典藏版」。以下为基于 GTA5 和 RDR2 发行历史推测的版本差异：</p>
+<h2>GTA6 Edition Comparison</h2>
+<p>Rockstar typically offers 3 editions for flagship titles: Standard, Special/Deluxe, and Collector's. Below are the estimated differences based on GTA5 and RDR2 release history:</p>
 
 <div class="edition-grid">
   <div class="edition-card">
@@ -874,33 +893,33 @@ def main():
     </div>
     <div class="edition-body">
       <ul>
-        <li>GTA6 基础游戏（PS5 / Xbox Series X|S）</li>
-        <li>预购特典（如有）</li>
+        <li>GTA6 base game (PS5 / Xbox Series X|S)</li>
+        <li>Pre-order bonus (if any)</li>
       </ul>
     </div>
     <div class="edition-footer">
-      <span class="edition-tag">数字版 / 实体版</span>
+      <span class="edition-tag">Digital / Physical</span>
     </div>
   </div>
 
   <div class="edition-card featured">
-    <div class="edition-badge">推荐</div>
+    <div class="edition-badge">Recommended</div>
     <div class="edition-header deluxe">
       <h3>Special Edition</h3>
       <div class="edition-price">$79.99 — $99.99</div>
     </div>
     <div class="edition-body">
       <ul>
-        <li>GTA6 基础游戏</li>
-        <li>独家游戏内内容（载具、武器皮肤、服装）</li>
-        <li>在线模式启动资金（预计 $1M-$2M 游戏币）</li>
-        <li>数字原声带</li>
-        <li>GTA6 艺术画册（数字版）</li>
-        <li>GTA Online 专属道具</li>
+        <li>GTA6 base game</li>
+        <li>Exclusive in-game content (vehicles, weapon skins, outfits)</li>
+        <li>Online mode starting cash (est. $1M-$2M in-game currency)</li>
+        <li>Digital soundtrack</li>
+        <li>GTA6 art book (digital)</li>
+        <li>GTA Online exclusive items</li>
       </ul>
     </div>
     <div class="edition-footer">
-      <span class="edition-tag">数字版 / 实体版</span>
+      <span class="edition-tag">Digital / Physical</span>
     </div>
   </div>
 
@@ -911,161 +930,161 @@ def main():
     </div>
     <div class="edition-body">
       <ul>
-        <li>Special Edition 全部内容</li>
-        <li>实体收藏铁盒 (Steelbook)</li>
-        <li>GTA6 主题艺术画册（实体）</li>
-        <li>主角手办或载具模型</li>
-        <li>Vice City 风格地图（实体印刷）</li>
-        <li>独占收藏外盒</li>
+        <li>All Special Edition content</li>
+        <li>Physical Steelbook case</li>
+        <li>GTA6 themed art book (physical)</li>
+        <li>Protagonist figurine or vehicle model</li>
+        <li>Vice City style map (physical print)</li>
+        <li>Exclusive collector's outer box</li>
       </ul>
     </div>
     <div class="edition-footer">
-      <span class="edition-tag">仅实体版</span>
+      <span class="edition-tag">Physical Only</span>
     </div>
   </div>
 </div>
 
-<div class="warning">以上版本内容和价格均为基于 GTA5 / RDR2 发行历史的推测。实际版本划分、价格和内容以 Rockstar 6 月 25 日官方公布为准。</div>
+<div class="warning">All edition details and prices above are estimates based on GTA5 / RDR2 release history. Actual editions, pricing, and contents will be confirmed when Rockstar officially announces them on June 25.</div>
 
-<h2>各平台预购渠道</h2>
+<h2>Where to Pre-Order by Platform</h2>
 
 <table>
   <thead>
-    <tr><th>平台</th><th>渠道</th><th>版本</th><th>备注</th></tr>
+    <tr><th>Platform</th><th>Store</th><th>Editions</th><th>Notes</th></tr>
   </thead>
   <tbody>
     <tr>
       <td><strong>PS5</strong></td>
       <td>PlayStation Store</td>
-      <td>标准 / 豪华</td>
-      <td>数字预购预载，发售日 0 点解锁</td>
+      <td>Standard / Deluxe</td>
+      <td>Digital pre-order with pre-load, unlocks midnight launch day</td>
     </tr>
     <tr>
       <td><strong>PS5</strong></td>
       <td>Amazon / GameStop / Best Buy</td>
-      <td>标准 / 豪华 / 典藏</td>
-      <td>实体版，发售日发货</td>
+      <td>Standard / Deluxe / Collector's</td>
+      <td>Physical, ships on launch day</td>
     </tr>
     <tr>
       <td><strong>Xbox Series X|S</strong></td>
       <td>Microsoft Store</td>
-      <td>标准 / 豪华</td>
-      <td>数字预购预载，Play Anywhere 可能支持</td>
+      <td>Standard / Deluxe</td>
+      <td>Digital pre-order with pre-load, Play Anywhere likely supported</td>
     </tr>
     <tr>
       <td><strong>Xbox Series X|S</strong></td>
       <td>Amazon / GameStop / Best Buy</td>
-      <td>标准 / 豪华 / 典藏</td>
-      <td>实体版，发售日发货</td>
+      <td>Standard / Deluxe / Collector's</td>
+      <td>Physical, ships on launch day</td>
     </tr>
     <tr>
       <td><strong>PC</strong></td>
       <td>Rockstar Games Launcher</td>
-      <td>待公布</td>
-      <td>PC 发售日尚未公布（预计 2027）</td>
+      <td>TBA</td>
+      <td>PC release date not yet announced (est. 2027)</td>
     </tr>
     <tr>
       <td><strong>PC</strong></td>
       <td>Steam / Epic Games</td>
-      <td>待公布</td>
-      <td>通常晚于主机版 6-18 个月</td>
+      <td>TBA</td>
+      <td>Typically 6-18 months after console launch</td>
     </tr>
     <tr>
-      <td><strong>全平台</strong></td>
+      <td><strong>All Platforms</strong></td>
       <td>Rockstar Warehouse</td>
-      <td>全版本</td>
-      <td>Rockstar 官方商城，典藏版首发渠道</td>
+      <td>All Editions</td>
+      <td>Rockstar's official store — primary channel for Collector's Edition</td>
     </tr>
   </tbody>
 </table>
 
-<h2>预购特典预测</h2>
-<p>Rockstar 历年预购特典模式（GTA5 和 RDR2 均有以下形式的预购奖励）：</p>
+<h2>Pre-Order Bonus Predictions</h2>
+<p>Rockstar's historical pre-order bonus patterns (GTA5 and RDR2 both had the following types of pre-order rewards):</p>
 
 <div class="card">
-  <h3>预购奖励（99% 确认会有）</h3>
+  <h3>Pre-Order Bonuses (99% Confirmed)</h3>
   <ul>
-    <li><strong>游戏币奖励</strong> — GTA Online / GTA6 Online 启动资金，通常 $500K-$2M</li>
-    <li><strong>独占载具</strong> — 预购专属载具（涂装或性能变体），不可通过游戏内途径获得</li>
-    <li><strong>武器皮肤</strong> — 预购专属武器外观或早期解锁</li>
-    <li><strong>服装套装</strong> — Vice City 主题复古服装</li>
+    <li><strong>In-game cash bonus</strong> — GTA Online / GTA6 Online starting funds, typically $500K-$2M</li>
+    <li><strong>Exclusive vehicle</strong> — pre-order exclusive vehicle (livery or performance variant), not obtainable through in-game means</li>
+    <li><strong>Weapon skins</strong> — pre-order exclusive weapon appearance or early unlock</li>
+    <li><strong>Outfit pack</strong> — Vice City themed retro outfits</li>
   </ul>
 </div>
 
 <div class="card">
-  <h3>豪华版额外奖励（推测）</h3>
+  <h3>Deluxe Edition Extra Bonuses (Speculative)</h3>
   <ul>
-    <li><strong>主线任务奖励加成</strong> — 类似 RDR2 的 Le Trésor des Morts 任务（PS4 独占内容后来全平台解锁）</li>
-    <li><strong>资产折扣</strong> — 游戏内第一处资产购买打折</li>
-    <li><strong>鲨鱼卡折扣</strong> — GTA Online 首次鲨鱼卡购买打折</li>
+    <li><strong>Story mission reward boost</strong> — similar to RDR2's Le Trésor des Morts mission (originally PS4 exclusive, later unlocked for all platforms)</li>
+    <li><strong>Property discount</strong> — discount on your first in-game property purchase</li>
+    <li><strong>Shark Card discount</strong> — discount on first GTA Online Shark Card purchase</li>
   </ul>
 </div>
 
-<h2>预购前要知道的事</h2>
+<h2>What to Know Before Pre-Ordering</h2>
 
 <div class="card">
-  <h3>实体版 vs 数字版</h3>
+  <h3>Physical vs Digital</h3>
   <table>
-    <thead><tr><th></th><th>实体版</th><th>数字版</th></tr></thead>
+    <thead><tr><th></th><th>Physical</th><th>Digital</th></tr></thead>
     <tbody>
-      <tr><td>预载</td><td>❌ 需等快递</td><td>✅ 提前 2-3 天下载</td></tr>
-      <tr><td>解锁时间</td><td>快递到货后</td><td>发售日 0 点（当地时间）</td></tr>
-      <tr><td>转售</td><td>✅ 可二手出</td><td>❌ 绑账号</td></tr>
-      <tr><td>典藏版</td><td>✅ 有实体周边</td><td>❌ 通常无典藏数字版</td></tr>
-      <tr><td>光盘损坏风险</td><td>⚠ 有</td><td>✅ 无</td></tr>
-      <tr><td>Game Sharing</td><td>✅ 借朋友玩</td><td>✅ 家庭共享（平台支持）</td></tr>
+      <tr><td>Pre-load</td><td>❌ Must wait for delivery</td><td>✅ Downloads 2-3 days early</td></tr>
+      <tr><td>Unlock time</td><td>When delivery arrives</td><td>Midnight launch day (local time)</td></tr>
+      <tr><td>Resell</td><td>✅ Can resell used</td><td>❌ Locked to account</td></tr>
+      <tr><td>Collector's Edition</td><td>✅ Physical collectibles included</td><td>❌ Usually no digital Collector's</td></tr>
+      <tr><td>Disc damage risk</td><td>⚠ Yes</td><td>✅ None</td></tr>
+      <tr><td>Game Sharing</td><td>✅ Lend to friends</td><td>✅ Family sharing (platform dependent)</td></tr>
     </tbody>
   </table>
 </div>
 
 <div class="card">
-  <h3>PC 玩家：等还是不等？</h3>
-  <p>Rockstar 历来 PC 版晚于主机版 6-18 个月：</p>
+  <h3>PC Players: Wait or Jump In?</h3>
+  <p>Rockstar historically releases PC versions 6-18 months after consoles:</p>
   <ul>
-    <li><strong>GTA5</strong>: PS3/360 (2013.9) → PC (2015.4) — 间隔 <strong>19 个月</strong></li>
-    <li><strong>RDR2</strong>: PS4/Xbox One (2018.10) → PC (2019.11) — 间隔 <strong>13 个月</strong></li>
+    <li><strong>GTA5</strong>: PS3/360 (Sep 2013) → PC (Apr 2015) — <strong>19 months</strong> gap</li>
+    <li><strong>RDR2</strong>: PS4/Xbox One (Oct 2018) → PC (Nov 2019) — <strong>13 months</strong> gap</li>
   </ul>
-  <p><strong>预估 GTA6 PC 版：2027 Q3-Q4</strong>。如果你只有 PC，建议等——Rockstar 的 PC 版向来比主机版画质更好、支持更高帧率。如果你有主机 + PC，建议先买主机版体验首发，PC 版出了再升级。</p>
+  <p><strong>Estimated GTA6 PC release: Q3-Q4 2027</strong>. If you only have a PC, it's worth the wait — Rockstar's PC ports consistently deliver better graphics and higher framerates than console versions. If you have both a console and a PC, buy the console version first to experience launch day, then upgrade when the PC version drops.</p>
 </div>
 
 <div class="card">
-  <h3>典藏版值得冲吗？</h3>
-  <p>GTA5 和 RDR2 的典藏版都在发售后<strong>快速售罄</strong>，二手市场溢价 50%-200%。如果你：</p>
+  <h3>Is the Collector's Edition Worth It?</h3>
+  <p>Both GTA5 and RDR2 Collector's Editions <strong>sold out fast</strong> after launch, with secondary market markups of 50%-200%. If you:</p>
   <ul>
-    <li>是 GTA 死忠粉 / 收藏党 → 直接冲，别犹豫，犹豫就没了</li>
-    <li>只想要游戏内容，对实体周边无感 → 买豪华数字版就够了</li>
-    <li>预算有限 → 标准版 + 后期等折扣买 DLC 内容</li>
+    <li>Are a die-hard GTA fan / collector → go for it immediately, don't hesitate or it's gone</li>
+    <li>Only want the in-game content, don't care about physical items → the Digital Deluxe is enough</li>
+    <li>Have a tight budget → get the Standard Edition + wait for DLC discounts later</li>
   </ul>
 </div>
 
-<h2>常见问题</h2>
+<h2>FAQ</h2>
 
 <div class="card">
-  <h3>预购什么时候扣款？</h3>
-  <p><strong>数字版</strong>：PlayStation Store 和 Microsoft Store 通常在预购时立即扣款。部分零售商（Amazon、Best Buy）发货时才扣款。</p>
+  <h3>When am I charged for a pre-order?</h3>
+  <p><strong>Digital</strong>: PlayStation Store and Microsoft Store typically charge immediately at pre-order. Some retailers (Amazon, Best Buy) charge when the item ships.</p>
 </div>
 
 <div class="card">
-  <h3>预购可以取消吗？</h3>
-  <p><strong>PlayStation Store</strong>: 发售日前可取消（联系客服或使用取消预购功能）。<strong>Microsoft Store</strong>: 发售日前 10 天内不能取消，之前可取消。<strong>Amazon</strong>: 发货前随时取消。<strong>GameStop</strong>: 到店付定金的可以退。</p>
+  <h3>Can I cancel a pre-order?</h3>
+  <p><strong>PlayStation Store</strong>: Cancel before release date (contact support or use the cancel pre-order feature). <strong>Microsoft Store</strong>: Cancel up to 10 days before release, not within the final 10 days. <strong>Amazon</strong>: Cancel anytime before shipment. <strong>GameStop</strong>: In-store deposits are refundable.</p>
 </div>
 
 <div class="card">
-  <h3>预购特典会过期吗？</h3>
-  <p>一般来说，预购特典代码在游戏发售后的 1-2 年内都可以兑换。但部分零售商可能限制「必须发售前预购才能拿到」。建议 6 月 25 日-11 月 18 日之间预购。</p>
+  <h3>Do pre-order bonus codes expire?</h3>
+  <p>Generally, pre-order bonus codes are redeemable for 1-2 years after launch. However, some retailers may require pre-ordering before release to qualify. It's recommended to pre-order between June 25 and November 18.</p>
 </div>
 
 <div class="card">
-  <h3>GTA6 需要多大存储空间？</h3>
-  <p>尚未正式公布。参考：GTA5 首发约 65GB（后膨胀至 110GB+），RDR2 约 150GB。保守估计 GTA6 需要 <strong>150GB-200GB</strong>。建议 PS5 预留 200GB 可用空间，Xbox Series S 用户可能需要扩展卡。</p>
+  <h3>How much storage space will GTA6 need?</h3>
+  <p>Not yet officially confirmed. For reference: GTA5 launched at ~65GB (later bloated to 110GB+), RDR2 was ~150GB. A conservative estimate for GTA6 is <strong>150GB-200GB</strong>. PS5 users should reserve at least 200GB of free space. Xbox Series S users may need an expansion card.</p>
 </div>
 
 <div class="card">
-  <h3>有没有 Early Access？</h3>
-  <p>Rockstar 从来不搞提前游玩（EA 那种"豪华版提前 3 天玩"）。豪华版/典藏版和标准版是同一天解锁。别被第三方网站骗了。</p>
+  <h3>Is there Early Access?</h3>
+  <p>Rockstar never does early access (the kind where Deluxe Edition gets to play 3 days early). Deluxe/Collector's and Standard editions all unlock on the same day. Don't fall for third-party sites claiming otherwise.</p>
 </div>
 
-<div class="warning">本页面将在 6 月 25 日预购开启当天更新实际价格、购买链接和版本详情。建议收藏本页，预购日当天回来查看最终版。想要典藏版的建议设个 6 月 25 日零点（美东时间）的闹钟——GTA5 和 RDR2 的典藏版都在开启预购后几小时内售罄。</div>""",
+<div class="warning">This page will be updated with actual prices, purchase links, and confirmed edition details on June 25 when pre-orders open. Bookmark this page and come back on pre-order day for the final version. If you're aiming for the Collector's Edition, set an alarm for midnight ET on June 25 — both GTA5 and RDR2 Collector's Editions sold out within hours of pre-orders opening.</div>""",
         active_nav="preorder")
 
     # 10. Generate privacy page

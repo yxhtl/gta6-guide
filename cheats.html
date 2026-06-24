@@ -5,7 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GTA6 Cheats &amp; Cheat Codes — Full List - GTA6 Guide</title>
 <meta name="description" content="GTA6 Cheats &amp; Cheat Codes — comprehensive GTA6 guide. Complete list of GTA6 cheat codes. Includes GTA5 reference cheats and confirmed GTA6 codes. God mode, weapons, vehicles, wanted level, money cheats.">
-<!-- 临界内联样式：CSS 加载前 overlay 必须遮住页面，防止白屏闪烁 -->
+<meta property="og:title" content="GTA6 Cheats &amp; Cheat Codes — Full List - GTA6 Guide">
+<meta property="og:description" content="GTA6 Cheats &amp; Cheat Codes — comprehensive GTA6 guide. Complete list of GTA6 cheat codes. Includes GTA5 reference cheats and confirmed GTA6 codes. God mode, weapons, vehicles, wanted level, money cheats.">
+<meta property="og:url" content="https://gta6.yxhtl.com/cheats.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="GTA6 Guide">
+<meta property="og:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="GTA6 Cheats &amp; Cheat Codes — Full List - GTA6 Guide">
+<meta name="twitter:description" content="GTA6 Cheats &amp; Cheat Codes — comprehensive GTA6 guide. Complete list of GTA6 cheat codes. Includes GTA5 reference cheats and confirmed GTA6 codes. God mode, weapons, vehicles, wanted level, money cheats.">
+<meta name="twitter:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<!-- Critical inline styles: overlay must cover the page before CSS loads to prevent white flash -->
 <style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
@@ -87,8 +99,8 @@
 <div class="tip">GTA5 cheats disable achievements/trophies when active. GTA6 will likely have the same restriction — save before using cheats.</div>
 
 <h2>What to Expect for GTA6 Cheats</h2>
-<p>GTA6 尚未发售，无法确认任何作弊码。以下是基于 GTA 系列传统的推测——实际以发售后为准。</p>
-<p>此页面将在游戏发售后 24-48 小时内更新，届时会有社区挖掘出的所有 GTA6 作弊码。</p>
+<p>GTA6 is not yet released — no cheat codes can be confirmed. The information below is based on GTA series tradition and will be updated after launch.</p>
+<p>This page will be updated with community-discovered GTA6 cheat codes within 24-48 hours of release.</p>
 
 <h2>Why Cheats Get Discovered Fast</h2>
 <p>Rockstar phone cheats follow a predictable pattern — the numbers spell words on a phone keypad. For example, GTA5'S invincibility number <code class="cheat-code">1-999-7246-545-537</code> spells <code class="cheat-code">1-999-PAIN-KILLER</code>. The community typically reverse-engineers all phone cheats within <strong>24-48 hours</strong> of release by brute-forcing common word combinations.</p>
@@ -111,30 +123,30 @@
     if (cleanupTimer) clearTimeout(cleanupTimer);
 
     overlay.classList.add('covering');
-    overlay.offsetHeight; // 强制重排，确保 covering 状态生效
+    overlay.offsetHeight; // Force reflow so the covering state takes effect
     overlay.classList.remove('covering');
     overlay.classList.add('reveal');
 
-    // 用 transitionend 等动画播完再清理，不会被 setTimeout 剪断
+    // Wait for animation to finish via transitionend, then clean up — won't be cut short by setTimeout
     var onDone = function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     };
     overlay.addEventListener('transitionend', onDone);
-    // 兜底：600ms 后强制清理（防 transitionend 不触发）
+    // Fallback: force cleanup after 600ms (in case transitionend doesn't fire)
     cleanupTimer = setTimeout(function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     }, 600);
   }
 
-  // 首次加载 + bfcache 恢复都触发入场
+  // Trigger enter animation on both first load and bfcache restore
   window.addEventListener('pageshow', function(e) {
     if (e.persisted) { overlay.classList.remove('cover'); }
     doEnter();
   });
 
-  // 拦截内部链接 → 快门右→中滑入 → 跳转
+  // Intercept internal links → slide curtain right-to-center → navigate
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a');
     if (!link) return;
