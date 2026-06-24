@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - GTA6 Guide</title>
+<meta name="description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<meta property="og:title" content="About - GTA6 Guide">
+<meta property="og:description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<meta property="og:url" content="https://gta6.yxhtl.com/about.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="GTA6 Guide">
+<meta property="og:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About - GTA6 Guide">
+<meta name="twitter:description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<meta name="twitter:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<!-- Critical inline styles: overlay must cover the page before CSS loads to prevent white flash -->
+<style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
+<link rel="stylesheet" href="css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About GTA6 Guide",
+  "description": "GTA6 Guide is a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more."
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <a href="index.html" class="logo">GTA6<span> Guide</span></a>
+    <nav>
+      <a href="story-missions/index.html">Missions</a>
+      <a href="weapons/index.html">Weapons</a>
+      <a href="vehicles/index.html">Vehicles</a>
+      <a href="pre-order.html">Pre-order</a>
+      <a href="cheats.html">Cheats</a>
+      <a href="money-guide.html">Money</a>
+    </nav>
+  </div>
+</header>
+<main>
+<div class="breadcrumb">
+  <a href="index.html">Home</a><span class="sep">›</span>
+  About
+</div>
+<h1>About GTA6 Guide</h1>
+
+<p><strong>Last updated:</strong> June 24, 2026</p>
+
+<h2>What This Site Is</h2>
+<p>GTA6 Guide is a <strong>fan-made resource</strong> for Grand Theft Auto VI. We cover everything from pre-order details and cheat codes to full mission walkthroughs, weapon stats, vehicle catalogs, money-making guides, and collectible locations.</p>
+<p>The site is maintained by one person and updated regularly as new information becomes available — especially around launch events, trailers, and game updates.</p>
+
+<h2>What We Cover</h2>
+<ul>
+  <li><strong>Pre-Order Guide</strong> — Editions, prices, bonuses, platform availability</li>
+  <li><strong>Story Missions</strong> — Full walkthroughs with tips, time estimates, and rewards</li>
+  <li><strong>Cheat Codes</strong> — Reference cheats from GTA5 and confirmed GTA6 codes (updated at launch)</li>
+  <li><strong>Weapons</strong> — Stats, locations, and recommendations</li>
+  <li><strong>Vehicles</strong> — Full catalog with performance data</li>
+  <li><strong>Money Guide</strong> — Best earning methods: heists, stock market, side businesses</li>
+  <li><strong>Collectibles</strong> — Locations and rewards</li>
+  <li><strong>Online</strong> — Multiplayer tips and updates (coming soon)</li>
+</ul>
+
+<h2>Disclaimer</h2>
+<p>GTA6 Guide is a <strong>fan project</strong>. It is not affiliated with, endorsed by, or connected to <strong>Rockstar Games</strong> or <strong>Take-Two Interactive</strong>. "Grand Theft Auto," "GTA," and all related logos, characters, and trademarks are the property of Take-Two Interactive Software, Inc.</p>
+<p>Pre-release content on this site is based on official trailers, press releases, reputable leaks, and series tradition. All such content is clearly marked. After the game launches, information will be verified against actual gameplay and updated accordingly.</p>
+
+<h2>Contact & Feedback</h2>
+<p>Found an error? Have a suggestion? Want to contribute? Email us at <strong>yxhtl@proton.me</strong> or open an issue on <a href="https://github.com/YXHTL/gta6-guide" target="_blank" rel="noopener">GitHub</a>.</p>
+</main>
+<footer>
+  <div class="inner">
+    <p>GTA6 Guide is a fan-made resource. Not affiliated with Rockstar Games or Take-Two Interactive.</p>
+    <p><a href="about.html">About</a> · <a href="privacy.html">Privacy Policy</a> · <a href="index.html">Home</a></p>
+  </div>
+</footer>
+<div class="page-transition-overlay covering" id="transition-overlay"><img class="overlay-art" src="css/overlay-art.svg" alt="" aria-hidden="true"></div>
+<script>
+(function() {
+  var overlay = document.getElementById('transition-overlay');
+  var cleanupTimer = null;
+
+  function doEnter() {
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+
+    overlay.classList.add('covering');
+    overlay.offsetHeight;
+    overlay.classList.remove('covering');
+    overlay.classList.add('reveal');
+
+    var onDone = function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    };
+    overlay.addEventListener('transitionend', onDone);
+    cleanupTimer = setTimeout(function() {
+      overlay.removeEventListener('transitionend', onDone);
+      overlay.classList.remove('reveal');
+    }, 600);
+  }
+
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) { overlay.classList.remove('cover'); }
+    doEnter();
+  });
+
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest('a');
+    if (!link) return;
+    var href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('//') || link.target === '_blank') return;
+    if (!href.endsWith('.html') && href !== '/' && !href.endsWith('/')) return;
+    if (link.getAttribute('download') || link.getAttribute('role') === 'tab') return;
+
+    e.preventDefault();
+    if (cleanupTimer) clearTimeout(cleanupTimer);
+    overlay.classList.remove('reveal');
+    overlay.classList.remove('covering');
+    overlay.offsetHeight;
+    overlay.classList.add('cover');
+    setTimeout(function() {
+      window.location.href = href;
+    }, 280);
+  });
+})();
+</script>
+</body>
+</html>
