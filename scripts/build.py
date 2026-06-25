@@ -661,162 +661,27 @@ def main():
 <p>We monitor cheat discovery threads on Reddit, GTAForums, and Twitter/X in real time during launch week. <strong>This page will be updated within hours of the first confirmed GTA6 cheat codes.</strong></p>""",
         active_nav="cheats")
 
-    # 7. Generate money guide (expanded strategies)
+    # 7. Generate money guide (placeholder — game not yet released)
     gen_generic("money-guide.html",
-        title="GTA6 Money Guide — How to Make Money Fast (Best Methods)",
+        title="GTA6 Money Guide — How to Make Money Fast",
         h1="GTA6 Money Guide — How to Make Money Fast",
-        meta="Best ways to earn money fast in GTA6: heists, stock market manipulation, side businesses, vehicle exports, collectible hunting. Detailed strategies and payout estimates.",
+        meta="GTA6 money-making guide: story missions, heists, stock market, properties, businesses, vehicle export, and more. Full strategies and payout data coming after launch.",
         content="""<div class="disclaimer">
-  GTA6 is not yet released. Specific money-making methods and payout figures will be updated within the first week after launch. The content below is based on GTA series history and confirmed GTA6 public information.
+  GTA6 is not yet released. Money-making methods, payout figures, and strategies will be added within the first week after launch (November 19, 2026). Bookmark this page and check back.
 </div>
 
-<h2>GTA Series Money-Making Fundamentals</h2>
-<p>These are the core money-making patterns across every GTA title — GTA6 will likely continue these systems, but specific numbers and mechanics are subject to change after launch. Each method includes <strong>why it works</strong> and <strong>what to verify after launch</strong>, so you can hit the ground running on day one.</p>
+<p>Once GTA6 launches, this page will cover:</p>
 
-<div class="card">
-  <h3>💰 1. Story Missions</h3>
-  <p>Main story missions are the primary income source in any GTA game. In GTA5, completing all 69 story missions yields roughly <strong>$30-40M</strong> (including heist cuts). Late-game heists can pay <strong>$20M+</strong> each (The Big Score, obvious approach).</p>
-  <p><strong>Key strategy:</strong> Some missions let you choose between approaches (e.g. GTA5's "obvious" vs "subtle") that affect your final payout. Manual-save before the mission, compare both outcomes — the subtle approach usually means fewer people taking a cut, so you keep more.</p>
-  <p><strong>Post-launch verification:</strong> Which missions pay the most? Which have approach choices? Which approach yields the highest net (after crew cuts)?</p>
-</div>
+<ul>
+  <li><strong>Story mission payouts</strong> — which missions pay the most, approach choices that affect your cut, crew cost optimization</li>
+  <li><strong>Stock market manipulation</strong> — which missions affect which stocks, optimal buy/sell timing, LCN vs BAWSAQ strategies</li>
+  <li><strong>Properties &amp; businesses</strong> — purchase costs, mission requirements, recurring income, ROI analysis</li>
+  <li><strong>Vehicle export</strong> — high-value car spawns, modding value multipliers, cooldown mechanics</li>
+  <li><strong>Side activities</strong> — street races, collectibles, random events, armored trucks, and other repeatable income sources</li>
+  <li><strong>Complete money-making priority ranking</strong> — actual tested payouts, not estimates</li>
+</ul>
 
-<div class="card">
-  <h3>📈 2. Stock Market Manipulation</h3>
-  <p>GTA5 introduced a player-influenced stock market — LCN (single-player) and BAWSAQ (online). The core mechanic: <strong>buy affected stocks BEFORE a mission, sell AFTER the mission when prices spike</strong>.</p>
-  <p>GTA5 classic examples:</p>
-  <ul>
-    <li><strong>Before LifeInvader mission:</strong> short LifeInvader → stock crashes after mission → profit</li>
-    <li><strong>Before Hotel Assassination:</strong> buy Betta Pharmaceuticals → rises 50%+ after mission</li>
-    <li><strong>Before The Multi Target Assassination:</strong> go all-in on Debonaire → rises 80%, switch to Redwood → rises 300%</li>
-  </ul>
-  <p>If GTA6 keeps this system (highly likely — Rockstar has no reason to cut a universally praised mechanic), stock manipulation will be <strong>the single most profitable money-making method in the entire game</strong>.</p>
-  <p><strong>Post-launch verification:</strong> What's in the LCN stock pool? Which missions affect which stocks? How big are the price swings? When is the optimal buy-in point (which checkpoint before the mission)?</p>
-</div>
-
-<div class="card">
-  <h3>🏢 3. Properties &amp; Businesses</h3>
-  <p>The GTA series has had a property system since Vice City — buy a business, complete its unique missions, and it starts generating recurring income.</p>
-  <p>Classic GTA Vice City examples:</p>
-  <ul>
-    <li><strong>Malibu Club</strong> — $120K purchase, $10K/week after missions</li>
-    <li><strong>Cherry Popper Ice Cream</strong> — $20K purchase, $3K/week after missions</li>
-    <li><strong>Print Works</strong> — $70K purchase, $8K/week after missions (final asset in the game)</li>
-  </ul>
-  <p>GTA5 simplified properties to "buy and earn" with no missions required. GTA6 will likely return to the Vice City model of "buy property → complete missions → collect income," since it's set in a new Vice City and paying homage to the original makes perfect sense.</p>
-  <p><strong>Post-launch verification:</strong> How many purchasable properties? Which have the best ROI? How many missions until each one "pays for itself"?</p>
-</div>
-
-<div class="card">
-  <h3>🚗 4. Vehicle Export</h3>
-  <p>Stealing and selling high-end vehicles has been a staple GTA money-maker since GTA1. GTA Online's Import/Export update turned it into one of the most profitable solo activities.</p>
-  <p>GTA6 is set in Vice City (Miami) — expect very high luxury car density in wealthy areas (Starfish Island, Vice Beach coastline). If single-player has an I/E-like system:</p>
-  <ul>
-    <li>High-end sports cars (Infernus, Cheetah tier) → est. $80K-$150K each</li>
-    <li>Luxury sedans → est. $40K-$80K each</li>
-    <li>Sell after modding → +20%-50% value (GTA5's Los Santos Customs logic)</li>
-  </ul>
-  <p><strong>Post-launch verification:</strong> Is there a dedicated export mission line? Where do the highest-value cars spawn? What's the modding value multiplier?</p>
-</div>
-
-<div class="card">
-  <h3>🏪 5. Robberies &amp; Random Events</h3>
-  <p>GTA5's convenience store robberies only paid a few hundred to a thousand dollars — not great ROI. But GTA6 may significantly expand this system:</p>
-  <ul>
-    <li><strong>Convenience stores</strong> — quick $200-$2K cash, low risk</li>
-    <li><strong>Armored trucks</strong> — random spawns, $5K-$25K (GTA5 logic)</li>
-    <li><strong>Random events</strong> — returning wallets, giving rides, chasing thieves, $500-$10K, some unlock special rewards</li>
-    <li><strong>ATM muggings</strong> — if GTA6 NPCs use ATMs, follow and rob them after they withdraw</li>
-  </ul>
-  <p><strong>Post-launch verification:</strong> Armored truck spawn points and payout range? Which random events give the best rewards? Any hidden special random events?</p>
-</div>
-
-<div class="card">
-  <h3>📦 6. Collectibles</h3>
-  <p>Every GTA has hidden collectibles — find enough and you get cash rewards plus special vehicles:</p>
-  <ul>
-    <li>GTA Vice City — 100 hidden packages → $100K + Hunter helicopter + Rhino tank</li>
-    <li>GTA SA — 100 tags + 50 photos + 50 horseshoes + 50 oysters → $300K+ total</li>
-    <li>GTA5 — 50 letter scraps + 50 spaceship parts + 30 nuclear waste + 50 signal jammers → $1.5M+ total</li>
-  </ul>
-  <p>The best thing about collectibles: <strong>zero risk</strong> — no shooting, no wanted levels, just explore and collect. GTA6's map is larger than GTA5's, so expect a new record for collectible count.</p>
-  <p><strong>Post-launch verification:</strong> What types of collectibles exist? Total count? Rewards at each milestone? Does 100% completion unlock a special mission like GTA5?</p>
-</div>
-
-<div class="card">
-  <h3>🏎️ 7. Repeatable Races &amp; Activities</h3>
-  <p>Street races, triathlons, parachuting, golf, tennis — GTA5's side activities may pay slowly, but they're infinitely repeatable:</p>
-  <ul>
-    <li>Street races — 1st place $1K-$5K, low risk</li>
-    <li>Triathlons — 1st place $5K-$15K, but 20-30 minutes per run</li>
-    <li>Parachuting — $1K-$3K per jump for completing all locations</li>
-  </ul>
-  <p>Possible GTA6 additions: street fighting/underground boxing (Vice City tradition), speedboat racing (larger water map), drone racing (modern Miami flavor).</p>
-  <p><strong>Post-launch verification:</strong> What repeatable activities exist? Which pays the most per hour? Are there daily/weekly bonuses?</p>
-</div>
-
-<div class="card">
-  <h3>🎯 8. Bounties &amp; Assassination Missions</h3>
-  <p>GTA5's assassination missions (Lester's 5 missions) pay $5K-$15K each, but their real value is <strong>pairing them with stock market manipulation for enormous amplified returns</strong>. GTA4 and RDR2 also had bounty hunting mechanics.</p>
-  <p>If GTA6 combines assassinations + stock market + bounty hunting, it creates a complete money-making chain: accept contract → invest in target's competitor → execute the hit → stock rises → cash out.</p>
-  <p><strong>Post-launch verification:</strong> How many assassination missions? Which stock does each one affect? Does a bounty system exist?</p>
-</div>
-
-<h2>Money Method Priority Ranking (Estimated Based on GTA Series History)</h2>
-<p>Ranked by expected payout. These will be replaced with actual data after launch.</p>
-
-<table>
-  <thead>
-    <tr><th>Tier</th><th>Method</th><th>Payout (per run / period)</th><th>Repeatable?</th><th>Difficulty</th><th>Prerequisites</th></tr>
-  </thead>
-  <tbody>
-    <tr><td><strong>S</strong></td><td>Stock market (paired with assassinations)</td><td>Millions to hundreds of millions</td><td>One-shot (per assassination opportunity)</td><td>Low</td><td>Story progress to unlock assassinations</td></tr>
-    <tr><td><strong>S</strong></td><td>Final story heists</td><td>$20M-$50M</td><td>One-shot</td><td>Med–High</td><td>Story progress to final chapter</td></tr>
-    <tr><td><strong>A</strong></td><td>Side business income</td><td>$10K-$100K/week</td><td>Recurring passive income</td><td>Medium</td><td>Purchase property + complete business missions</td></tr>
-    <tr><td><strong>A</strong></td><td>100% collectible completion</td><td>$500K-$2M total</td><td>One-shot</td><td>Low</td><td>Free roam access</td></tr>
-    <tr><td><strong>B</strong></td><td>Vehicle export</td><td>$40K-$150K per vehicle</td><td>Repeatable (cooldown TBD)</td><td>Low–Med</td><td>Unlock export contact</td></tr>
-    <tr><td><strong>B</strong></td><td>Assassination missions (no stock play)</td><td>$5K-$20K each</td><td>One-shot (5-10 missions)</td><td>Medium</td><td>Story progress</td></tr>
-    <tr><td><strong>C</strong></td><td>Store robberies / armored trucks</td><td>$200-$25K per hit</td><td>Repeatable (random spawns)</td><td>Low</td><td>None</td></tr>
-    <tr><td><strong>C</strong></td><td>Repeatable races &amp; activities</td><td>$1K-$15K per run</td><td>Infinitely repeatable</td><td>Low–Med</td><td>None</td></tr>
-    <tr><td><strong>D</strong></td><td>Random events / wallet returns</td><td>$500-$10K per event</td><td>Random trigger</td><td>Very low</td><td>None</td></tr>
-  </tbody>
-</table>
-
-<h2>GTA6 Economy System Predictions</h2>
-<p>Based on Rockstar's recent design trends (GTA Online's economic model + RDR2's immersion-first design), here are key predictions for GTA6's economy:</p>
-
-<div class="card">
-  <h3>Prediction 1: Vice City-Style Property System Returns</h3>
-  <p>GTA6 is set in Vice City — paying homage to the original is inevitable. One of the most beloved mechanics from the original VC was the <strong>buy property → complete missions → collect income</strong> loop. GTA5 removed the mission requirement and made properties pure passive income, which players found less rewarding than VC's approach. Rockstar has every reason to bring back VC's best system.</p>
-</div>
-
-<div class="card">
-  <h3>Prediction 2: More Realistic Economy</h3>
-  <p>RDR2's economy was much tighter than GTA5's — money was harder to earn, prices were grounded, and every purchase required consideration. GTA6 will likely land between the two: harder to get rich than GTA5, but not as restrictive as RDR2. This <strong>extends single-player playtime</strong> (GTA5 made it too easy to buy everything and run out of things to do).</p>
-</div>
-
-<div class="card">
-  <h3>Prediction 3: Money Laundering Mechanics</h3>
-  <p>GTA Online already has basic "money laundering" concepts (different businesses carry different risk levels). GTA6 single-player may introduce a more complex legal/illegal income balance — illegal activities pay fast but attract police attention, while legal businesses are stable but slow to grow. This directly echoes Vice City's original "front company" concept.</p>
-</div>
-
-<div class="card">
-  <h3>Prediction 4: Shark Card Ecosystem Continues</h3>
-  <p>GTA Online has made billions from Shark Cards — Take-Two isn't giving up that cash cow. GTA6 single-player will almost certainly have no microtransactions, but GTA6 Online definitely will. Understanding which items are most expensive and most worth buying with in-game currency in Online can help you decide where to spend your single-player money.</p>
-</div>
-
-<h2>Day-One Money Roadmap</h2>
-<p>If you're aiming to "beat the game fast and reach financial freedom," here's the recommended action order:</p>
-
-<ol class="step-list">
-  <li><strong>Complete the prologue (est. 3-5 missions)</strong> — this unlocks free roam, the prerequisite for everything else.</li>
-  <li><strong>Don't waste money early</strong> — funds are tight at the start. Pick up weapons from enemies, steal cars. Universal GTA rule: $10K in the first third of the game is worth more than $100K in the endgame.</li>
-  <li><strong>Watch for assassination missions</strong> — if you see one from Lester or a similar character, <strong>stop</strong>. Check a guide first to confirm which stock it affects, THEN do the mission. These are the highest-ROI money opportunities in the entire game — miss one and you lose millions.</li>
-  <li><strong>Buy your first property early</strong> — once properties become available, prioritize ones that unlock missions (not pure passive income). After completing the property missions, it generates recurring passive income.</li>
-  <li><strong>Grab collectibles casually, don't obsess</strong> — pick them up as you play through the story, then use a guide to finish after beating the game. Collectibles are "nice to have," not "need to have."</li>
-  <li><strong>Come back after beating the game</strong> — this page will be updated with all actual payout figures, optimal investment timing, and complete strategies within a week of launch.</li>
-</ol>
-
-<div class="warning">All rankings and dollar amounts above are estimates based on GTA series history, NOT confirmed GTA6 data. After launch, this page will be updated with actual payout rankings, optimal buy/sell timing for every stock, ROI analysis for all properties, and a complete money-making strategy guide. Bookmark this page and come back right after launch for the final version.</div>""",
+<div class="warning">All strategies and numbers will be based on tested, confirmed GTA6 gameplay data — not speculation. Check back after November 19, 2026.</div>""",
         active_nav="money")
 
     # 8. Generate online guide page
@@ -880,71 +745,51 @@ def main():
   <p class="preorder-hero-date">Launching <strong>November 19, 2026</strong></p>
 </div>
 
-<div class="tip">This page will be updated with actual prices and links when pre-orders open on June 25. Edition info below is based on Rockstar's historical release patterns and Take-Two earnings data.</div>
+<div class="tip">Pre-orders are now live (opened June 25, 2026). All information on this page is based on official Rockstar announcements. Game launches <strong>November 19, 2026</strong>. Pre-load begins November 12.</div>
 
-<h2>GTA6 Edition Comparison</h2>
-<p>Rockstar typically offers 3 editions for flagship titles: Standard, Special/Deluxe, and Collector's. Below are the estimated differences based on GTA5 and RDR2 release history:</p>
+<h2>GTA6 Edition Comparison — Officially Confirmed</h2>
+<p>Rockstar confirmed two editions at launch. There is <strong>no Collector's Edition</strong> with physical collectibles. Physical copies come with a download code inside the box — <strong>no disc</strong> at launch.</p>
 
 <div class="edition-grid">
   <div class="edition-card">
     <div class="edition-header standard">
       <h3>Standard Edition</h3>
-      <div class="edition-price">$69.99</div>
+      <div class="edition-price">$79.99</div>
     </div>
     <div class="edition-body">
       <ul>
         <li>GTA6 base game (PS5 / Xbox Series X|S)</li>
-        <li>Pre-order bonus (if any)</li>
+        <li>Vintage Vice City Pack (all pre-orders and purchases before Nov 20, 2026)</li>
       </ul>
     </div>
     <div class="edition-footer">
-      <span class="edition-tag">Digital / Physical</span>
+      <span class="edition-tag">Digital / Physical (download code)</span>
     </div>
   </div>
 
   <div class="edition-card featured">
     <div class="edition-badge">Recommended</div>
-    <div class="edition-header deluxe">
-      <h3>Special Edition</h3>
-      <div class="edition-price">$79.99 — $99.99</div>
+    <div class="edition-header ultimate">
+      <h3>Ultimate Edition</h3>
+      <div class="edition-price">$99.99</div>
     </div>
     <div class="edition-body">
       <ul>
-        <li>GTA6 base game</li>
-        <li>Exclusive in-game content (vehicles, weapon skins, outfits)</li>
-        <li>Online mode starting cash (est. $1M-$2M in-game currency)</li>
-        <li>Digital soundtrack</li>
-        <li>GTA6 art book (digital)</li>
-        <li>GTA Online exclusive items</li>
+        <li>All Standard Edition content</li>
+        <li>5 exclusive vehicles: '95 Grotti Cheetah, '67 Vapid Dominator Boogie, Dinka Enduro, Shitzu Squalo, Crest Kayak</li>
+        <li>4 exclusive weapons: Hawk &amp; Little Morgan Revolvers, Girardi ES9, Klose K17 Custom Pistols</li>
+        <li>Exclusive apparel tied to Jason &amp; Lucia's story</li>
+        <li>Access to Rideout Customs &amp; One-Eyed Willie's mod shops (unique inventories)</li>
+        <li>Classic Car Collection restoration missions</li>
       </ul>
     </div>
     <div class="edition-footer">
-      <span class="edition-tag">Digital / Physical</span>
-    </div>
-  </div>
-
-  <div class="edition-card">
-    <div class="edition-header collector">
-      <h3>Collector's Edition</h3>
-      <div class="edition-price">$149.99 — $199.99</div>
-    </div>
-    <div class="edition-body">
-      <ul>
-        <li>All Special Edition content</li>
-        <li>Physical Steelbook case</li>
-        <li>GTA6 themed art book (physical)</li>
-        <li>Protagonist figurine or vehicle model</li>
-        <li>Vice City style map (physical print)</li>
-        <li>Exclusive collector's outer box</li>
-      </ul>
-    </div>
-    <div class="edition-footer">
-      <span class="edition-tag">Physical Only</span>
+      <span class="edition-tag">Digital Only</span>
     </div>
   </div>
 </div>
 
-<div class="warning">All edition details and prices above are estimates based on GTA5 / RDR2 release history. Actual editions, pricing, and contents will be confirmed when Rockstar officially announces them on June 25.</div>
+<div class="tip">All edition details above are <strong>officially confirmed</strong> by Rockstar Games as of June 25, 2026. No Collector's Edition with physical collectibles exists. Physical copies do NOT include a disc — a proper disc release may come in 2027 or later.</div>
 
 <h2>Where to Pre-Order by Platform</h2>
 
@@ -956,104 +801,111 @@ def main():
     <tr>
       <td><strong>PS5</strong></td>
       <td>PlayStation Store</td>
-      <td>Standard / Deluxe</td>
-      <td>Digital pre-order with pre-load, unlocks midnight launch day</td>
+      <td>Standard / Ultimate</td>
+      <td>Digital pre-order. Pre-load starts Nov 12, unlocks midnight Nov 19.</td>
     </tr>
     <tr>
       <td><strong>PS5</strong></td>
       <td>Amazon / GameStop / Best Buy</td>
-      <td>Standard / Deluxe / Collector's</td>
-      <td>Physical, ships on launch day</td>
+      <td>Standard</td>
+      <td>Physical box with download code (no disc). Ships Nov 12 for pre-load.</td>
     </tr>
     <tr>
       <td><strong>Xbox Series X|S</strong></td>
       <td>Microsoft Store</td>
-      <td>Standard / Deluxe</td>
-      <td>Digital pre-order with pre-load, Play Anywhere likely supported</td>
+      <td>Standard / Ultimate</td>
+      <td>Digital pre-order. Pre-load starts Nov 12, unlocks midnight Nov 19.</td>
     </tr>
     <tr>
       <td><strong>Xbox Series X|S</strong></td>
       <td>Amazon / GameStop / Best Buy</td>
-      <td>Standard / Deluxe / Collector's</td>
-      <td>Physical, ships on launch day</td>
-    </tr>
-    <tr>
-      <td><strong>PC</strong></td>
-      <td>Rockstar Games Launcher</td>
-      <td>TBA</td>
-      <td>PC release date not yet announced (est. 2027)</td>
-    </tr>
-    <tr>
-      <td><strong>PC</strong></td>
-      <td>Steam / Epic Games</td>
-      <td>TBA</td>
-      <td>Typically 6-18 months after console launch</td>
+      <td>Standard</td>
+      <td>Physical box with download code (no disc). Ships Nov 12 for pre-load.</td>
     </tr>
     <tr>
       <td><strong>All Platforms</strong></td>
       <td>Rockstar Warehouse</td>
-      <td>All Editions</td>
-      <td>Rockstar's official store — primary channel for Collector's Edition</td>
+      <td>Standard / Ultimate</td>
+      <td>Rockstar's official store. Ultimate Edition is <strong>digital only</strong>.</td>
+    </tr>
+    <tr>
+      <td><strong>PC</strong></td>
+      <td>Rockstar Games Launcher / Steam / Epic</td>
+      <td>TBA</td>
+      <td>PC version not yet announced by Rockstar. No release window confirmed.</td>
     </tr>
   </tbody>
 </table>
 
-<h2>Pre-Order Bonus Predictions</h2>
-<p>Rockstar's historical pre-order bonus patterns (GTA5 and RDR2 both had the following types of pre-order rewards):</p>
+<h2>Pre-Order Bonuses — Confirmed</h2>
+<p>Rockstar has officially confirmed the following pre-order bonuses. All pre-orders and purchases made before November 20, 2026 qualify.</p>
 
 <div class="card">
-  <h3>Pre-Order Bonuses (99% Confirmed)</h3>
+  <h3>Vintage Vice City Pack (All Pre-Orders)</h3>
   <ul>
-    <li><strong>In-game cash bonus</strong> — GTA Online / GTA6 Online starting funds, typically $500K-$2M</li>
-    <li><strong>Exclusive vehicle</strong> — pre-order exclusive vehicle (livery or performance variant), not obtainable through in-game means</li>
-    <li><strong>Weapon skins</strong> — pre-order exclusive weapon appearance or early unlock</li>
-    <li><strong>Outfit pack</strong> — Vice City themed retro outfits</li>
+    <li><strong>'55 Vapid Stanier</strong> — classic sedan with vintage styling, plus a garage near Ocean Beach (includes weapon locker and stolen goods storage)</li>
+    <li><strong>Jason's outfit</strong> — pastel linen suit with vintage hairstyle</li>
+    <li><strong>Lucia's outfit</strong> — red sequin mini dress with curls</li>
+    <li><strong>Weapon pattern</strong> — Tommy Vercetti-inspired palm tree tropical pattern</li>
   </ul>
 </div>
 
 <div class="card">
-  <h3>Deluxe Edition Extra Bonuses (Speculative)</h3>
+  <h3>Digital Pre-Order Extra Bonus</h3>
   <ul>
-    <li><strong>Story mission reward boost</strong> — similar to RDR2's Le Trésor des Morts mission (originally PS4 exclusive, later unlocked for all platforms)</li>
-    <li><strong>Property discount</strong> — discount on your first in-game property purchase</li>
-    <li><strong>Shark Card discount</strong> — discount on first GTA Online Shark Card purchase</li>
+    <li><strong>1 free month of GTA+</strong> — redeemable immediately for GTA Online / GTA V</li>
+    <li>Includes monthly GTA$500,000 deposit, Shark Card bonuses, free/discounted vehicles, and access to the GTA+ Games Library</li>
   </ul>
 </div>
+
+<div class="card">
+  <h3>Ultimate Edition Exclusive Content ($99.99)</h3>
+  <ul>
+    <li><strong>Vehicles</strong>: '95 Grotti Cheetah, '67 Vapid Dominator Boogie, Dinka Enduro, Shitzu Squalo, Crest Kayak</li>
+    <li><strong>Weapons</strong>: Hawk &amp; Little Morgan Revolvers (his-and-hers, palm-tree grips, engraved, scoped), Girardi ES9 Custom Pistol (Jason's), Klose K17 Custom Pistol (Lucia's)</li>
+    <li><strong>Apparel</strong>: Exclusive clothing and hairstyles for Jason &amp; Lucia</li>
+    <li><strong>Mod Shops</strong>: Rideout Customs &amp; One-Eyed Willie's — unique car/tattoo/clothing/salon inventories</li>
+    <li><strong>Classic Car Collection</strong>: Find and restore abandoned vehicles (commissioned by Wyman)</li>
+  </ul>
+</div>
+
+<div class="warning">GTA6 Online is <strong>not available at launch</strong> — the base game is single-player only. Pre-order bonuses are for the single-player campaign. GTA6 Online will be added post-launch.</div>
 
 <h2>What to Know Before Pre-Ordering</h2>
 
 <div class="card">
-  <h3>Physical vs Digital</h3>
+  <h3>Physical vs Digital — The New Reality</h3>
+  <p><strong>Important:</strong> Physical GTA6 copies do <strong>NOT</strong> contain a disc. The box includes a download code. This applies to all retailers.</p>
   <table>
-    <thead><tr><th></th><th>Physical</th><th>Digital</th></tr></thead>
+    <thead><tr><th></th><th>Physical (Download Code)</th><th>Digital</th></tr></thead>
     <tbody>
-      <tr><td>Pre-load</td><td>❌ Must wait for delivery</td><td>✅ Downloads 2-3 days early</td></tr>
-      <tr><td>Unlock time</td><td>When delivery arrives</td><td>Midnight launch day (local time)</td></tr>
-      <tr><td>Resell</td><td>✅ Can resell used</td><td>❌ Locked to account</td></tr>
-      <tr><td>Collector's Edition</td><td>✅ Physical collectibles included</td><td>❌ Usually no digital Collector's</td></tr>
-      <tr><td>Disc damage risk</td><td>⚠ Yes</td><td>✅ None</td></tr>
-      <tr><td>Game Sharing</td><td>✅ Lend to friends</td><td>✅ Family sharing (platform dependent)</td></tr>
+      <tr><td>Pre-load</td><td>✅ Code ships Nov 12, download before launch</td><td>✅ Pre-load starts Nov 12</td></tr>
+      <tr><td>Unlock time</td><td>Midnight Nov 19 (local time)</td><td>Midnight Nov 19 (local time)</td></tr>
+      <tr><td>Resell</td><td>✅ Can resell unused code</td><td>❌ Locked to account</td></tr>
+      <tr><td>Ultimate Edition</td><td>❌ Not available physically</td><td>✅ Ultimate Edition is digital only</td></tr>
+      <tr><td>Box / Collectible</td><td>✅ Has a box on your shelf</td><td>❌ Nothing physical</td></tr>
+      <tr><td>Game Sharing</td><td>✅ Give code to anyone</td><td>✅ Family sharing (platform dependent)</td></tr>
     </tbody>
   </table>
 </div>
 
 <div class="card">
-  <h3>PC Players: Wait or Jump In?</h3>
-  <p>Rockstar historically releases PC versions 6-18 months after consoles:</p>
+  <h3>PC Players: No Announcement Yet</h3>
+  <p>Rockstar has <strong>not announced a PC version</strong> of GTA6. Historical patterns provide a rough guide but are not confirmation:</p>
   <ul>
     <li><strong>GTA5</strong>: PS3/360 (Sep 2013) → PC (Apr 2015) — <strong>19 months</strong> gap</li>
     <li><strong>RDR2</strong>: PS4/Xbox One (Oct 2018) → PC (Nov 2019) — <strong>13 months</strong> gap</li>
   </ul>
-  <p><strong>Estimated GTA6 PC release: Q3-Q4 2027</strong>. If you only have a PC, it's worth the wait — Rockstar's PC ports consistently deliver better graphics and higher framerates than console versions. If you have both a console and a PC, buy the console version first to experience launch day, then upgrade when the PC version drops.</p>
+  <p>If the pattern holds, expect a PC release sometime in <strong>2027-2028</strong>. If you only have a PC, you'll be waiting. If you have a console, buy it there — there's no confirmed date to wait for on PC.</p>
 </div>
 
 <div class="card">
-  <h3>Is the Collector's Edition Worth It?</h3>
-  <p>Both GTA5 and RDR2 Collector's Editions <strong>sold out fast</strong> after launch, with secondary market markups of 50%-200%. If you:</p>
+  <h3>No Collector's Edition — What to Do?</h3>
+  <p>Rockstar did <strong>not</strong> announce a Collector's Edition with physical items (no Steelbook, no figurine, no art book). This breaks the tradition from GTA5 and RDR2. Here's what it means:</p>
   <ul>
-    <li>Are a die-hard GTA fan / collector → go for it immediately, don't hesitate or it's gone</li>
-    <li>Only want the in-game content, don't care about physical items → the Digital Deluxe is enough</li>
-    <li>Have a tight budget → get the Standard Edition + wait for DLC discounts later</li>
+    <li>If you want maximum in-game content → <strong>Ultimate Edition ($99.99)</strong> is your only upgrade path</li>
+    <li>If you want physical items → there are none from Rockstar directly. Third-party merchandise may appear closer to launch</li>
+    <li>If you're on a budget → <strong>Standard Edition ($79.99)</strong> still includes the Vintage Vice City Pack if you pre-order or buy before Nov 20</li>
   </ul>
 </div>
 
@@ -1076,7 +928,7 @@ def main():
 
 <div class="card">
   <h3>How much storage space will GTA6 need?</h3>
-  <p>Not yet officially confirmed. For reference: GTA5 launched at ~65GB (later bloated to 110GB+), RDR2 was ~150GB. A conservative estimate for GTA6 is <strong>150GB-200GB</strong>. PS5 users should reserve at least 200GB of free space. Xbox Series S users may need an expansion card.</p>
+  <p>Not yet officially confirmed by Rockstar. Industry estimates based on trailer footage and development scope: <strong>150GB-200GB</strong>. PS5 users should reserve at least 200GB. Xbox Series S (512GB model) users will likely need an expansion card.</p>
 </div>
 
 <div class="card">
@@ -1084,7 +936,7 @@ def main():
   <p>Rockstar never does early access (the kind where Deluxe Edition gets to play 3 days early). Deluxe/Collector's and Standard editions all unlock on the same day. Don't fall for third-party sites claiming otherwise.</p>
 </div>
 
-<div class="warning">This page will be updated with actual prices, purchase links, and confirmed edition details on June 25 when pre-orders open. Bookmark this page and come back on pre-order day for the final version. If you're aiming for the Collector's Edition, set an alarm for midnight ET on June 25 — both GTA5 and RDR2 Collector's Editions sold out within hours of pre-orders opening.</div>""",
+<div class="warning">All information on this page updated June 25, 2026 based on official Rockstar announcements. Pre-orders are live now. If you're aiming for the Ultimate Edition, note that it is <strong>digital only</strong> — there is no physical Ultimate Edition. The Standard Edition physical box contains a download code, not a disc.</div>""",
         active_nav="preorder")
 
     # 10. Generate privacy page
