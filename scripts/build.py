@@ -949,11 +949,54 @@ def main():
 <p>This site is a fan project and is not affiliated with Rockstar Games or Take-Two Interactive.</p>""",
         active_nav="")
 
-    # 10. Generate homepage
+    # 11. Generate about page
+    gen_generic("about.html",
+        title="About - GTA6 Guide",
+        h1="About GTA6 Guide",
+        meta="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.",
+        content="""<p><strong>Last updated:</strong> June 28, 2026</p>
+
+<h2>What This Site Is</h2>
+<p>GTA6 Guide is a <strong>fan-made resource</strong> for Grand Theft Auto VI. We cover everything from pre-order details and cheat codes to full mission walkthroughs, weapon stats, vehicle catalogs, money-making guides, and collectible locations.</p>
+<p>The site is maintained by one person and updated regularly as new information becomes available — especially around launch events, trailers, and game updates.</p>
+
+<h2>What We Cover</h2>
+<ul>
+  <li><strong>Pre-Order Guide</strong> — Editions, prices, bonuses, platform availability</li>
+  <li><strong>Story Missions</strong> — Full walkthroughs with tips, time estimates, and rewards</li>
+  <li><strong>Cheat Codes</strong> — Reference cheats from GTA5 and confirmed GTA6 codes (updated at launch)</li>
+  <li><strong>Weapons</strong> — Stats, locations, and recommendations</li>
+  <li><strong>Vehicles</strong> — Full catalog with performance data</li>
+  <li><strong>Money Guide</strong> — Best earning methods: heists, stock market, side businesses</li>
+  <li><strong>Collectibles</strong> — Locations and rewards</li>
+  <li><strong>Online</strong> — Multiplayer tips and updates (coming soon)</li>
+</ul>
+
+<h2>Disclaimer</h2>
+<p>GTA6 Guide is a <strong>fan project</strong>. It is not affiliated with, endorsed by, or connected to <strong>Rockstar Games</strong> or <strong>Take-Two Interactive</strong>. "Grand Theft Auto," "GTA," and all related logos, characters, and trademarks are the property of Take-Two Interactive Software, Inc.</p>
+<p>Pre-release content on this site is based on official trailers, press releases, reputable leaks, and series tradition. All such content is clearly marked. After the game launches, information will be verified against actual gameplay and updated accordingly.</p>
+
+<h2>Contact &amp; Feedback</h2>
+<p>Found an error? Have a suggestion? Want to contribute? Email us at <strong>yxhtl@proton.me</strong> or open an issue on <a href="https://github.com/YXHTL/gta6-guide" target="_blank" rel="noopener">GitHub</a>.</p>""",
+        active_nav="")
+
+    # 12. Generate 404 page
+    gen_generic("404.html",
+        title="Page Not Found - GTA6 Guide",
+        h1="404 — Page Not Found",
+        meta="The page you're looking for doesn't exist.",
+        content="""<div style="text-align:center;padding:40px 0">
+<p style="font-size:4rem;margin:0;opacity:0.3">404</p>
+<p style="font-size:1.2rem;margin:16px 0;color:var(--text-dim)">This page doesn't exist. It may have been moved or the URL might be wrong.</p>
+<a href="index.html" style="display:inline-block;margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Back to Home</a>
+</div>""",
+        active_nav="")
+
+    # 13. Generate homepage
     gen_homepage()
 
-    # 11. Generate sitemap & robots
-    pages = ["", "privacy.html", "cheats.html", "money-guide.html", "pre-order.html",
+    # 14. Generate sitemap & robots
+    pages = ["", "about.html", "privacy.html", "cheats.html", "money-guide.html", "pre-order.html",
              "story-missions/", "weapons/", "vehicles/",
              "collectibles/", "side-missions/", "online/"]
     for m in mission_items:

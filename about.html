@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About - GTA6 Guide</title>
-<meta name="description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
-<meta property="og:title" content="About - GTA6 Guide">
-<meta property="og:description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<title>About - GTA6 Guide - GTA6 Guide</title>
+<meta name="description" content="About GTA6 Guide — comprehensive GTA6 guide. About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<meta property="og:title" content="About - GTA6 Guide - GTA6 Guide">
+<meta property="og:description" content="About GTA6 Guide — comprehensive GTA6 guide. About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
 <meta property="og:url" content="https://gta6.yxhtl.com/about.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="GTA6 Guide">
@@ -14,18 +14,28 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="About - GTA6 Guide">
-<meta name="twitter:description" content="About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
+<meta name="twitter:title" content="About - GTA6 Guide - GTA6 Guide">
+<meta name="twitter:description" content="About GTA6 Guide — comprehensive GTA6 guide. About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.">
 <meta name="twitter:image" content="https://gta6.yxhtl.com/css/og-image.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌴</text></svg>">
+<!-- Microsoft Clarity -->
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "x9iflmg36h");
+</script>
 <!-- Critical inline styles: overlay must cover the page before CSS loads to prevent white flash -->
 <style>.page-transition-overlay{position:fixed;inset:0;z-index:9999;pointer-events:none;background:transparent;transform:translateX(0)}.page-transition-overlay img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}</style>
 <link rel="stylesheet" href="css/style.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "AboutPage",
-  "name": "About GTA6 Guide",
-  "description": "GTA6 Guide is a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more."
+  "@type": "Article",
+  "headline": "About - GTA6 Guide",
+  "description": "About GTA6 Guide — comprehensive GTA6 guide. About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.",
+  "about": { "@type": "VideoGame", "name": "Grand Theft Auto VI" }
 }
 </script>
 </head>
@@ -46,11 +56,12 @@
 <main>
 <div class="breadcrumb">
   <a href="index.html">Home</a><span class="sep">›</span>
-  About
+  About GTA6 Guide
 </div>
 <h1>About GTA6 Guide</h1>
+<div class="article-meta">About GTA6 Guide — a fan-made resource for Grand Theft Auto VI. Pre-order info, cheats, missions, weapons, vehicles, money tips, and more.</div>
 
-<p><strong>Last updated:</strong> June 24, 2026</p>
+<p><strong>Last updated:</strong> June 28, 2026</p>
 
 <h2>What This Site Is</h2>
 <p>GTA6 Guide is a <strong>fan-made resource</strong> for Grand Theft Auto VI. We cover everything from pre-order details and cheat codes to full mission walkthroughs, weapon stats, vehicle catalogs, money-making guides, and collectible locations.</p>
@@ -72,7 +83,7 @@
 <p>GTA6 Guide is a <strong>fan project</strong>. It is not affiliated with, endorsed by, or connected to <strong>Rockstar Games</strong> or <strong>Take-Two Interactive</strong>. "Grand Theft Auto," "GTA," and all related logos, characters, and trademarks are the property of Take-Two Interactive Software, Inc.</p>
 <p>Pre-release content on this site is based on official trailers, press releases, reputable leaks, and series tradition. All such content is clearly marked. After the game launches, information will be verified against actual gameplay and updated accordingly.</p>
 
-<h2>Contact & Feedback</h2>
+<h2>Contact &amp; Feedback</h2>
 <p>Found an error? Have a suggestion? Want to contribute? Email us at <strong>yxhtl@proton.me</strong> or open an issue on <a href="https://github.com/YXHTL/gta6-guide" target="_blank" rel="noopener">GitHub</a>.</p>
 </main>
 <footer>
@@ -91,26 +102,30 @@
     if (cleanupTimer) clearTimeout(cleanupTimer);
 
     overlay.classList.add('covering');
-    overlay.offsetHeight;
+    overlay.offsetHeight; // Force reflow so the covering state takes effect
     overlay.classList.remove('covering');
     overlay.classList.add('reveal');
 
+    // Wait for animation to finish via transitionend, then clean up — won't be cut short by setTimeout
     var onDone = function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     };
     overlay.addEventListener('transitionend', onDone);
+    // Fallback: force cleanup after 600ms (in case transitionend doesn't fire)
     cleanupTimer = setTimeout(function() {
       overlay.removeEventListener('transitionend', onDone);
       overlay.classList.remove('reveal');
     }, 600);
   }
 
+  // Trigger enter animation on both first load and bfcache restore
   window.addEventListener('pageshow', function(e) {
     if (e.persisted) { overlay.classList.remove('cover'); }
     doEnter();
   });
 
+  // Intercept internal links → slide curtain right-to-center → navigate
   document.addEventListener('click', function(e) {
     var link = e.target.closest('a');
     if (!link) return;
